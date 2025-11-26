@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>设备授权购买</title>
     <style>
         :root {
@@ -19,40 +19,37 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 0;
-            line-height: 1.5;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
-        .mobile-container {
-            max-width: 100%;
-            min-height: 100vh;
+        .container {
             background: white;
-            position: relative;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
         }
         
-        /* 头部 */
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 20px 16px;
+            padding: 20px;
             text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .header h1 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
+            font-size: 22px;
+            margin-bottom: 5px;
         }
         
         .header p {
@@ -60,101 +57,88 @@
             opacity: 0.9;
         }
         
-        /* 底部导航 */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            padding: 8px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-        
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            padding: 8px 4px;
-            font-size: 12px;
-            color: #666;
-            text-decoration: none;
-        }
-        
-        .nav-item.active {
-            color: var(--primary);
-        }
-        
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 2px;
-            display: block;
-        }
-        
-        /* 主内容区 */
         .main-content {
-            padding: 16px;
-            padding-bottom: 80px; /* 为底部导航留出空间 */
+            padding: 20px;
         }
         
-        /* 套餐卡片 */
-        .pricing-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin: 16px 0;
+        .section {
+            margin-bottom: 25px;
         }
         
-        .pricing-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-        
-        .pricing-card.popular {
-            border-color: var(--warning);
-            background: linear-gradient(135deg, #fffaf0 0%, #fff5e6 100%);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-        
-        .plan-info {
-            flex: 1;
-        }
-        
-        .plan-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-        
-        .plan-name {
+        .section-title {
             font-size: 16px;
             font-weight: 600;
+            margin-bottom: 12px;
             color: var(--dark);
-            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
         }
         
-        .plan-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
+        .section-title i {
+            margin-right: 8px;
+            font-size: 18px;
         }
         
-        .plan-period {
-            font-size: 12px;
-            color: #666;
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #444;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .package-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .package-option {
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .package-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .package-option.selected {
+            border-color: var(--primary);
+            background: #f8f9ff;
+        }
+        
+        .package-option.popular {
+            border-color: var(--warning);
         }
         
         .popular-badge {
+            position: absolute;
+            top: -10px;
+            right: 10px;
             background: var(--warning);
             color: white;
             padding: 4px 8px;
@@ -163,191 +147,44 @@
             font-weight: 600;
         }
         
-        .plan-features {
-            list-style: none;
-            margin: 12px 0;
-        }
-        
-        .plan-features li {
-            padding: 6px 0;
-            font-size: 13px;
-            color: #555;
-            display: flex;
-            align-items: center;
-        }
-        
-        .plan-features li::before {
-            content: "✓";
-            color: var(--success);
-            font-weight: bold;
-            margin-right: 8px;
-            font-size: 14px;
-        }
-        
-        .btn-buy {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-size: 14px;
+        .package-name {
             font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s;
-        }
-        
-        .btn-buy:active {
-            transform: scale(0.98);
-        }
-        
-        /* 订单历史 */
-        .order-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 12px;
-            border-left: 4px solid var(--success);
-        }
-        
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .order-id {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--dark);
-        }
-        
-        .order-status {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-        
-        .status-completed {
-            background: #e7f7ef;
-            color: #10b981;
-        }
-        
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .order-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            font-size: 12px;
-        }
-        
-        .detail-item {
-            margin-bottom: 4px;
-        }
-        
-        .detail-label {
-            color: #666;
-            margin-bottom: 2px;
-        }
-        
-        .detail-value {
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        /* 表单样式 */
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--dark);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
+            margin-bottom: 5px;
             font-size: 16px;
-            transition: border-color 0.3s;
-            -webkit-appearance: none;
         }
         
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
+        .package-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
         }
         
-        /* 空状态 */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
+        .package-period {
+            font-size: 12px;
             color: #666;
-        }
-        
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-        
-        /* 模态框 */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 20px;
         }
         
         .btn {
-            flex: 1;
-            padding: 12px;
+            display: block;
+            width: 100%;
+            padding: 14px;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
         
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
         }
         
         .btn-secondary {
@@ -355,27 +192,59 @@
             color: white;
         }
         
-        .btn:active {
-            transform: scale(0.98);
+        .btn-secondary:hover {
+            background: #5a6268;
         }
         
-        /* 标签页内容 */
-        .tab-content {
+        .result-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
             display: none;
         }
         
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
         }
         
-        /* 设备状态检查 */
+        .result-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .contact-info {
+            background: #e7f3ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .contact-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .contact-details {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
         .device-status {
-            margin: 10px 0;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
             text-align: center;
             font-weight: bold;
+            margin-bottom: 15px;
         }
         
         .status-active {
@@ -393,46 +262,6 @@
             color: #856404;
         }
         
-        .application-data {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border-left: 4px solid #007bff;
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 14px;
-        }
-        
-        .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .btn-check {
-            background: #17a2b8;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin: 5px 0;
-        }
-        
-        .btn-copy {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin: 5px 0;
-        }
-        
         .loading {
             text-align: center;
             padding: 20px;
@@ -445,477 +274,158 @@
             color: #dc3545;
         }
         
-        .cart-summary {
-            background: var(--light);
-            padding: 16px;
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 20px;
             border-radius: 8px;
-            margin-top: 16px;
-        }
-        
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
             font-size: 14px;
+            z-index: 10000;
+            animation: fadeInOut 2s ease-in-out;
         }
         
-        .summary-total {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary);
-            border-top: 1px solid #ddd;
-            padding-top: 8px;
-            margin-top: 8px;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -40%); }
+            20% { opacity: 1; transform: translate(-50%, -50%); }
+            80% { opacity: 1; transform: translate(-50%, -50%); }
+            100% { opacity: 0; transform: translate(-50%, -60%); }
         }
     </style>
 </head>
 <body>
-    <div class="mobile-container">
-        <!-- 头部 -->
-        <header class="header">
+    <div class="container">
+        <div class="header">
             <h1>📱 设备授权购买</h1>
             <p>选择套餐，立即开通服务</p>
-        </header>
+        </div>
         
-        <!-- 主内容 -->
-        <main class="main-content">
-            <!-- 套餐购买 -->
-            <div id="pricing" class="tab-content active">
-                <!-- 设备状态查询 -->
-                <div class="pricing-card">
-                    <h3 style="margin-bottom: 16px;">🔍 设备状态查询</h3>
-                    <div class="form-group">
-                        <label>设备ID：</label>
-                        <input type="text" id="deviceIdInput" class="form-control" placeholder="请输入设备ID">
-                    </div>
-                    <div class="quick-actions">
-                        <button class="btn-check" onclick="checkDeviceStatus()">
-                            查询设备状态
-                        </button>
-                        <button class="btn-copy" onclick="showMyOrders()">
-                            我的购买记录
-                        </button>
-                    </div>
-                    <div id="deviceStatusResult" style="margin-top: 16px;"></div>
+        <div class="main-content">
+            <!-- 设备信息输入 -->
+            <div class="section">
+                <div class="section-title">
+                    <i>🔍</i> 设备信息
                 </div>
-                
-                <div class="pricing-cards">
-                    <!-- 体验卡 -->
-                    <div class="pricing-card">
-                        <div class="card-header">
-                            <div class="plan-info">
-                                <div class="plan-icon">🎁</div>
-                                <div class="plan-name">体验卡</div>
-                                <div class="plan-price">免费</div>
-                                <div class="plan-period">7天体验</div>
-                            </div>
-                        </div>
-                        <ul class="plan-features">
-                            <li>完整功能体验</li>
-                            <li>基础技术支持</li>
-                            <li>单设备授权</li>
-                            <li>到期提醒</li>
-                        </ul>
-                        <button class="btn-buy" onclick="buyPackage('trial', '体验卡', 0)">
-                            免费体验
-                        </button>
-                    </div>
-                    
-                    <!-- 月卡 -->
-                    <div class="pricing-card">
-                        <div class="card-header">
-                            <div class="plan-info">
-                                <div class="plan-icon">⭐</div>
-                                <div class="plan-name">月卡</div>
-                                <div class="plan-price">¥29</div>
-                                <div class="plan-period">30天授权</div>
-                            </div>
-                        </div>
-                        <ul class="plan-features">
-                            <li>完整功能使用</li>
-                            <li>优先技术支持</li>
-                            <li>单设备授权</li>
-                            <li>自动续费提醒</li>
-                        </ul>
-                        <button class="btn-buy" onclick="buyPackage('monthly', '月卡', 29)">
-                            立即购买
-                        </button>
-                    </div>
-                    
-                    <!-- 季卡 -->
-                    <div class="pricing-card popular">
-                        <div class="card-header">
-                            <div class="plan-info">
-                                <div class="plan-icon">🌟🌟</div>
-                                <div class="plan-name">季卡</div>
-                                <div class="plan-price">¥79</div>
-                                <div class="plan-period">90天授权</div>
-                            </div>
-                            <div class="popular-badge">热门</div>
-                        </div>
-                        <ul class="plan-features">
-                            <li>完整功能使用</li>
-                            <li>24小时技术支持</li>
-                            <li>单设备授权</li>
-                            <li>自动续费提醒</li>
-                            <li>买3个月送7天</li>
-                        </ul>
-                        <button class="btn-buy" onclick="buyPackage('quarterly', '季卡', 79)">
-                            超值购买
-                        </button>
-                    </div>
-                    
-                    <!-- 年卡 -->
-                    <div class="pricing-card">
-                        <div class="card-header">
-                            <div class="plan-info">
-                                <div class="plan-icon">🌟🌟🌟</div>
-                                <div class="plan-name">年卡</div>
-                                <div class="plan-price">¥299</div>
-                                <div class="plan-period">365天授权</div>
-                            </div>
-                        </div>
-                        <ul class="plan-features">
-                            <li>完整功能使用</li>
-                            <li>24小时技术支持</li>
-                            <li>单设备授权</li>
-                            <li>自动续费提醒</li>
-                            <li>买1年送2个月</li>
-                        </ul>
-                        <button class="btn-buy" onclick="buyPackage('yearly', '年卡', 299)">
-                            年度优惠
-                        </button>
-                    </div>
-                    
-                    <!-- 永久授权 -->
-                    <div class="pricing-card">
-                        <div class="card-header">
-                            <div class="plan-info">
-                                <div class="plan-icon">🏆</div>
-                                <div class="plan-name">永久授权</div>
-                                <div class="plan-price">¥999</div>
-                                <div class="plan-period">终身使用</div>
-                            </div>
-                        </div>
-                        <ul class="plan-features">
-                            <li>完整功能终身使用</li>
-                            <li>24小时专属支持</li>
-                            <li>单设备永久授权</li>
-                            <li>所有更新免费</li>
-                            <li>VIP客服通道</li>
-                        </ul>
-                        <button class="btn-buy" onclick="buyPackage('permanent', '永久授权', 999)">
-                            终身拥有
-                        </button>
-                    </div>
+                <div class="form-group">
+                    <label for="deviceId">设备ID：</label>
+                    <input type="text" id="deviceId" class="form-control" placeholder="请输入设备ID">
                 </div>
-            </div>
-            
-            <!-- 订单历史 -->
-            <div id="orders" class="tab-content">
-                <h3 style="margin-bottom: 16px;">📋 我的订单</h3>
-                <div id="orderHistory">
-                    <div class="empty-state">
-                        <div class="empty-icon">📭</div>
-                        <p>暂无订单记录</p>
-                        <p style="font-size: 12px; margin-top: 4px;">快去选购套餐吧</p>
-                    </div>
+                <div class="form-group">
+                    <label for="contact">联系方式：</label>
+                    <input type="text" id="contact" class="form-control" placeholder="手机号或微信号">
                 </div>
-            </div>
-            
-            <!-- 购买帮助 -->
-            <div id="help" class="tab-content">
-                <h3 style="margin-bottom: 16px;">❓ 购买帮助</h3>
-                <div class="pricing-card">
-                    <h4 style="margin-bottom: 12px;">🤔 如何选择套餐？</h4>
-                    <p style="font-size: 14px; margin-bottom: 16px; color: #555;">
-                        根据您的使用需求选择合适的时长，推荐选择季卡，性价比最高。
-                    </p>
-                    
-                    <h4 style="margin-bottom: 12px;">💳 购买流程</h4>
-                    <p style="font-size: 14px; margin-bottom: 16px; color: #555;">
-                        1. 选择套餐<br>
-                        2. 输入设备ID<br>
-                        3. 复制账单信息<br>
-                        4. 发送给客服开通
-                    </p>
-                    
-                    <h4 style="margin-bottom: 12px;">⏰ 授权生效</h4>
-                    <p style="font-size: 14px; margin-bottom: 16px; color: #555;">
-                        客服收到账单和设备ID后，会在24小时内为您开通服务。
-                    </p>
-                    
-                    <h4 style="margin-bottom: 12px;">📱 如何获取设备ID？</h4>
-                    <p style="font-size: 14px; margin-bottom: 16px; color: #555;">
-                        📺 电视：查看机身背面标签或系统设置中的"序列号"<br>
-                        📱 手机：拨号界面输入 <code>*#06#</code> 获取IMEI<br>
-                        📦 盒子：查看机身底部标签的"序列号"
-                    </p>
-                    
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button class="btn-buy" style="width: auto; padding: 10px 20px;" onclick="contactCustomerService()">
-                            📞 联系客服
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-        
-        <!-- 底部导航 -->
-        <nav class="bottom-nav">
-            <a class="nav-item active" onclick="switchTab('pricing')">
-                <span class="nav-icon">💰</span>
-                <span>套餐</span>
-            </a>
-            <a class="nav-item" onclick="switchTab('orders')">
-                <span class="nav-icon">📋</span>
-                <span>订单</span>
-            </a>
-            <a class="nav-item" onclick="switchTab('help')">
-                <span class="nav-icon">❓</span>
-                <span>帮助</span>
-            </a>
-        </nav>
-    </div>
-
-    <!-- 购买模态框 -->
-    <div id="purchaseModal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 16px;">💳 购买套餐</h3>
-            
-            <div class="form-group">
-                <label>设备ID：</label>
-                <input type="text" id="purchaseDeviceId" class="form-control" placeholder="请输入设备ID" required>
-            </div>
-            
-            <div class="cart-summary">
-                <div class="summary-row">
-                    <span>套餐：</span>
-                    <span id="modalPackageName">体验卡</span>
-                </div>
-                <div class="summary-row">
-                    <span>价格：</span>
-                    <span id="modalPackagePrice">¥0</span>
-                </div>
-                <div class="summary-row summary-total">
-                    <span>应付总额：</span>
-                    <span id="modalTotal">¥0</span>
-                </div>
-            </div>
-            
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closePurchaseModal()">
-                    取消
+                <button class="btn btn-secondary" onclick="checkDeviceStatus()">
+                    查询设备状态
                 </button>
-                <button class="btn btn-primary" onclick="processPurchase()">
-                    确认购买
+            </div>
+            
+            <!-- 套餐选择 -->
+            <div class="section">
+                <div class="section-title">
+                    <i>💰</i> 套餐选择
+                </div>
+                <div class="package-selector">
+                    <div class="package-option" onclick="selectPackage('trial')">
+                        <div class="package-name">体验卡</div>
+                        <div class="package-price">免费</div>
+                        <div class="package-period">7天体验</div>
+                    </div>
+                    
+                    <div class="package-option" onclick="selectPackage('monthly')">
+                        <div class="package-name">月卡</div>
+                        <div class="package-price">¥29</div>
+                        <div class="package-period">30天授权</div>
+                    </div>
+                    
+                    <div class="package-option" onclick="selectPackage('quarterly')">
+                        <div class="package-name">季卡</div>
+                        <div class="package-price">¥79</div>
+                        <div class="package-period">90天授权</div>
+                    </div>
+                    
+                    <div class="package-option popular selected" onclick="selectPackage('yearly')">
+                        <div class="popular-badge">热门</div>
+                        <div class="package-name">年卡</div>
+                        <div class="package-price">¥299</div>
+                        <div class="package-period">365天授权</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 购买按钮 -->
+            <button class="btn btn-primary" onclick="processPurchase()">
+                立即购买
+            </button>
+            
+            <!-- 查询结果 -->
+            <div id="deviceStatusResult" class="result-section">
+                <div class="result-title">设备状态查询结果</div>
+                <div id="statusContent"></div>
+            </div>
+            
+            <!-- 购买结果 -->
+            <div id="purchaseResult" class="result-section">
+                <div class="result-title">购买成功</div>
+                <div id="billContent" class="result-content"></div>
+                <button class="btn btn-secondary" onclick="copyToClipboard()">
+                    复制账单信息
                 </button>
+            </div>
+            
+            <!-- 联系方式 -->
+            <div class="contact-info">
+                <div class="contact-title">📞 客服联系方式</div>
+                <div class="contact-details">
+                    微信：service123<br>
+                    QQ：123456789<br>
+                    电话：400-123-4567<br>
+                    服务时间：9:00-18:00
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // 全局变量
+        let selectedPackage = 'yearly';
         let orders = [];
-        let currentPackage = null;
         
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
-            loadOrders();
+            // 从本地存储加载订单记录
+            const savedOrders = localStorage.getItem('device_orders');
+            if (savedOrders) {
+                orders = JSON.parse(savedOrders);
+            }
         });
         
-        // 切换标签页
-        function switchTab(tabName) {
-            // 更新导航状态
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
+        // 选择套餐
+        function selectPackage(packageType) {
+            selectedPackage = packageType;
+            
+            // 更新UI
+            document.querySelectorAll('.package-option').forEach(option => {
+                option.classList.remove('selected');
             });
-            event.target.closest('.nav-item').classList.add('active');
-            
-            // 更新内容显示
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('selected');
         }
         
-        // 购买套餐
-        function buyPackage(type, name, price) {
-            currentPackage = { type, name, price };
-            
-            // 更新模态框中的信息
-            document.getElementById('modalPackageName').textContent = name;
-            document.getElementById('modalPackagePrice').textContent = `¥${price}`;
-            document.getElementById('modalTotal').textContent = `¥${price}`;
-            
-            // 清空表单
-            document.getElementById('purchaseDeviceId').value = '';
-            
-            document.getElementById('purchaseModal').style.display = 'flex';
-        }
-        
-        // 关闭购买模态框
-        function closePurchaseModal() {
-            document.getElementById('purchaseModal').style.display = 'none';
-        }
-        
-        // 处理购买
-        function processPurchase() {
-            const deviceId = document.getElementById('purchaseDeviceId').value.trim();
+        // 检查设备状态
+        async function checkDeviceStatus() {
+            const deviceId = document.getElementById('deviceId').value.trim();
+            const statusContent = document.getElementById('statusContent');
+            const resultSection = document.getElementById('deviceStatusResult');
             
             if (!deviceId) {
                 showToast('请输入设备ID');
                 return;
             }
             
-            // 创建订单
-            const order = {
-                id: 'ORD' + Date.now().toString().slice(-6),
-                packageName: currentPackage.name,
-                packageType: currentPackage.type,
-                deviceId: deviceId,
-                amount: currentPackage.price,
-                date: new Date().toLocaleString('zh-CN'),
-                status: 'pending'
-            };
-            
-            // 保存订单
-            orders.unshift(order);
-            localStorage.setItem('mobile_orders', JSON.stringify(orders));
-            
-            // 关闭模态框
-            closePurchaseModal();
-            
-            // 显示账单信息
-            showBillInfo(order);
-            
-            // 刷新订单列表
-            loadOrders();
-        }
-        
-        // 显示账单信息
-        function showBillInfo(order) {
-            const billText = `【设备授权购买账单】
-订单号：${order.id}
-套餐：${order.packageName}
-设备ID：${order.deviceId}
-金额：¥${order.amount}
-购买时间：${order.date}
-
-请将此信息发送给客服开通服务。`;
-            
-            const resultDiv = document.getElementById('deviceStatusResult');
-            resultDiv.innerHTML = `
-                <div class="application-data">${billText}</div>
-                <div class="quick-actions">
-                    <button class="btn-copy" onclick="copyToClipboard('${escapeText(billText)}')">
-                        📋 复制账单信息
-                    </button>
-                    <button class="btn-check" onclick="contactCustomerService()">
-                        📞 联系客服
-                    </button>
-                </div>
-                <p style="margin-top: 15px; font-size: 14px; color: #666;">
-                    💡 提示：复制账单信息后，通过微信、QQ等方式发送给客服开通服务
-                </p>
-            `;
-            
-            // 滚动到结果区域
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        // 加载订单历史
-        function loadOrders() {
-            const orderHistory = document.getElementById('orderHistory');
-            const savedOrders = localStorage.getItem('mobile_orders');
-            
-            if (savedOrders) {
-                orders = JSON.parse(savedOrders);
-            }
-            
-            if (orders.length === 0) {
-                orderHistory.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📭</div>
-                        <p>暂无订单记录</p>
-                        <p style="font-size: 12px; margin-top: 4px;">快去选购套餐吧</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            orders.forEach(order => {
-                html += `
-                    <div class="order-card">
-                        <div class="order-header">
-                            <div class="order-id">${order.id}</div>
-                            <div class="order-status ${order.status === 'completed' ? 'status-completed' : 'status-pending'}">
-                                ${order.status === 'completed' ? '已完成' : '待开通'}
-                            </div>
-                        </div>
-                        <div class="order-details">
-                            <div class="detail-item">
-                                <div class="detail-label">套餐</div>
-                                <div class="detail-value">${order.packageName}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">设备ID</div>
-                                <div class="detail-value">${order.deviceId}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">金额</div>
-                                <div class="detail-value">¥${order.amount}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">时间</div>
-                                <div class="detail-value">${order.date.split(' ')[0]}</div>
-                            </div>
-                        </div>
-                        <button class="btn-copy" style="margin-top: 10px; padding: 8px 12px; font-size: 12px;" 
-                                onclick="copyOrderInfo('${order.id}')">
-                            复制账单
-                        </button>
-                    </div>
-                `;
-            });
-            
-            orderHistory.innerHTML = html;
-        }
-        
-        // 复制订单信息
-        function copyOrderInfo(orderId) {
-            const order = orders.find(o => o.id === orderId);
-            if (order) {
-                const billText = `【设备授权购买账单】
-订单号：${order.id}
-套餐：${order.packageName}
-设备ID：${order.deviceId}
-金额：¥${order.amount}
-购买时间：${order.date}
-
-请将此信息发送给客服开通服务。`;
-                
-                copyToClipboard(billText);
-            }
-        }
-        
-        // 检查设备状态
-        async function checkDeviceStatus() {
-            const deviceId = document.getElementById('deviceIdInput').value.trim();
-            const statusResult = document.getElementById('deviceStatusResult');
-            
-            if (!deviceId) {
-                showToast('请输入设备ID进行查询');
-                return;
-            }
-            
-            statusResult.innerHTML = '<div class="loading">🔍 查询中...</div>';
+            statusContent.innerHTML = '<div class="loading">🔍 查询中...</div>';
+            resultSection.style.display = 'block';
             
             try {
                 // 模拟从服务器获取设备数据
@@ -933,7 +443,7 @@
                         <div class="device-status ${isExpired ? 'status-expired' : 'status-active'}">
                             ${isExpired ? '❌ 已过期' : '✅ 授权有效'}
                         </div>
-                        <div class="application-data">
+                        <div class="result-content">
 设备ID：${device.device_id}
 用户：${device.owner}
 联系方式：${device.contact}
@@ -952,103 +462,90 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
                     `;
                 }
                 
-                statusResult.innerHTML = statusHtml;
+                statusContent.innerHTML = statusHtml;
                 
             } catch (error) {
-                statusResult.innerHTML = `
+                statusContent.innerHTML = `
                     <div class="error">
                         ❌ 查询失败: ${error.message}
                         <br>
-                        <button class="btn-check" onclick="checkDeviceStatus()">重试</button>
+                        <button class="btn btn-secondary" onclick="checkDeviceStatus()">重试</button>
                     </div>
                 `;
             }
         }
         
-        // 模拟获取设备数据
-        async function fetchDevicesData() {
-            // 模拟网络请求延迟
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve({
-                        authorized_devices: [
-                            {
-                                device_id: "1234567890",
-                                owner: "张三",
-                                contact: "13800138000",
-                                package: "季卡",
-                                activate_date: "2023-10-01",
-                                expire_date: "2024-01-01"
-                            },
-                            {
-                                device_id: "0987654321",
-                                owner: "李四",
-                                contact: "wechat123",
-                                package: "月卡",
-                                activate_date: "2023-11-15",
-                                expire_date: "2023-12-15"
-                            }
-                        ]
-                    });
-                }, 800);
-            });
-        }
-        
-        // 显示我的订单
-        function showMyOrders() {
-            const statusResult = document.getElementById('deviceStatusResult');
+        // 处理购买
+        function processPurchase() {
+            const deviceId = document.getElementById('deviceId').value.trim();
+            const contact = document.getElementById('contact').value.trim();
             
-            if (orders.length === 0) {
-                statusResult.innerHTML = '<div class="info">暂无购买记录</div>';
+            if (!deviceId) {
+                showToast('请输入设备ID');
                 return;
             }
             
-            let html = '<h4 style="margin-bottom: 12px;">📋 我的购买记录</h4>';
-            orders.forEach(order => {
-                html += `
-                    <div class="application-data" style="margin-bottom: 15px;">
+            if (!contact) {
+                showToast('请输入联系方式');
+                return;
+            }
+            
+            // 获取套餐信息
+            const packageInfo = getPackageInfo(selectedPackage);
+            
+            // 创建订单
+            const order = {
+                id: 'ORD' + Date.now().toString().slice(-6),
+                packageName: packageInfo.name,
+                packageType: selectedPackage,
+                deviceId: deviceId,
+                contact: contact,
+                amount: packageInfo.price,
+                date: new Date().toLocaleString('zh-CN'),
+                status: 'pending'
+            };
+            
+            // 保存订单
+            orders.unshift(order);
+            localStorage.setItem('device_orders', JSON.stringify(orders));
+            
+            // 显示账单信息
+            showBillInfo(order);
+            
+            // 显示成功消息
+            showToast('✅ 购买成功！请将账单发送给客服');
+        }
+        
+        // 显示账单信息
+        function showBillInfo(order) {
+            const billContent = document.getElementById('billContent');
+            const resultSection = document.getElementById('purchaseResult');
+            
+            const billText = `【设备授权购买账单】
 订单号：${order.id}
 套餐：${order.packageName}
 设备ID：${order.deviceId}
+联系方式：${order.contact}
 金额：¥${order.amount}
 购买时间：${order.date}
-状态：${order.status === 'completed' ? '已开通' : '待开通'}
-                    </div>
-                    <button class="btn-copy" onclick="copyOrderInfo('${order.id}')">
-                        复制此账单
-                    </button>
-                    <hr style="margin: 15px 0;">
-                `;
-            });
-            statusResult.innerHTML = html;
-        }
-        
-        // 联系客服
-        function contactCustomerService() {
-            // 这里可以替换为实际的客服联系方式
-            const serviceInfo = `客服微信：service123
-客服QQ：123456789
-服务时间：9:00-18:00
 
-请将账单和设备ID发送给客服开通服务。`;
+请将此信息发送给客服开通服务。`;
             
-            const resultDiv = document.getElementById('deviceStatusResult');
-            resultDiv.innerHTML = `
-                <div class="application-data">${serviceInfo}</div>
-                <button class="btn-copy" onclick="copyToClipboard('${escapeText(serviceInfo)}')">
-                    📋 复制客服信息
-                </button>
-            `;
+            billContent.textContent = billText;
+            resultSection.style.display = 'block';
             
             // 滚动到结果区域
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
+            resultSection.scrollIntoView({ behavior: 'smooth' });
         }
         
         // 复制到剪贴板
-        function copyToClipboard(text) {
+        function copyToClipboard() {
+            const billContent = document.getElementById('billContent');
+            const text = billContent.textContent;
+            
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(text).then(() => {
-                    showToast('✅ 信息已复制到剪贴板！');
+                    showToast('✅ 账单信息已复制到剪贴板！');
                 }).catch(err => {
                     fallbackCopyToClipboard(text);
                 });
@@ -1069,7 +566,7 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             
             try {
                 document.execCommand('copy');
-                showToast('✅ 信息已复制到剪贴板！');
+                showToast('✅ 账单信息已复制到剪贴板！');
             } catch (err) {
                 showToast('❌ 复制失败，请手动选择复制');
             }
@@ -1077,9 +574,45 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             document.body.removeChild(textArea);
         }
         
-        // 转义文本用于JavaScript字符串
-        function escapeText(text) {
-            return text.replace(/\n/g, '\\n').replace(/'/g, "\\'");
+        // 获取套餐信息
+        function getPackageInfo(packageType) {
+            const packages = {
+                'trial': { name: '体验卡', price: 0 },
+                'monthly': { name: '月卡', price: 29 },
+                'quarterly': { name: '季卡', price: 79 },
+                'yearly': { name: '年卡', price: 299 }
+            };
+            
+            return packages[packageType] || packages['yearly'];
+        }
+        
+        // 模拟获取设备数据
+        async function fetchDevicesData() {
+            // 模拟网络请求延迟
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        authorized_devices: [
+                            {
+                                device_id: "1234567890",
+                                owner: "张三",
+                                contact: "13800138000",
+                                package: "年卡",
+                                activate_date: "2023-10-01",
+                                expire_date: "2024-10-01"
+                            },
+                            {
+                                device_id: "0987654321",
+                                owner: "李四",
+                                contact: "wechat123",
+                                package: "月卡",
+                                activate_date: "2023-11-15",
+                                expire_date: "2023-12-15"
+                            }
+                        ]
+                    });
+                }, 800);
+            });
         }
         
         // 显示Toast提示
@@ -1093,45 +626,12 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.textContent = message;
-            toast.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: rgba(0,0,0,0.8);
-                color: white;
-                padding: 12px 20px;
-                border-radius: 8px;
-                font-size: 14px;
-                z-index: 10000;
-                animation: fadeInOut 2s ease-in-out;
-            `;
             
             document.body.appendChild(toast);
             
             setTimeout(() => {
                 toast.remove();
             }, 2000);
-        }
-        
-        // 添加动画样式
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fadeInOut {
-                0% { opacity: 0; transform: translate(-50%, -40%); }
-                20% { opacity: 1; transform: translate(-50%, -50%); }
-                80% { opacity: 1; transform: translate(-50%, -50%); }
-                100% { opacity: 0; transform: translate(-50%, -60%); }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // 点击模态框外部关闭
-        window.onclick = function(event) {
-            const modal = document.getElementById('purchaseModal');
-            if (event.target === modal) {
-                closePurchaseModal();
-            }
         }
     </script>
 </body>

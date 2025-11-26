@@ -105,6 +105,51 @@
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
         
+        .device-type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .device-option {
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .device-option:hover {
+            border-color: var(--primary);
+        }
+        
+        .device-option.selected {
+            border-color: var(--primary);
+            background: #f8f9ff;
+        }
+        
+        .device-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .device-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .help-tip {
+            background: #f0f7ff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+            display: none;
+        }
+        
         .package-selector {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -163,6 +208,41 @@
         .package-period {
             font-size: 12px;
             color: #666;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .payment-option {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-option:hover {
+            border-color: var(--primary);
+        }
+        
+        .payment-option.selected {
+            border-color: var(--primary);
+            background: #f8f9ff;
+        }
+        
+        .payment-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .payment-name {
+            font-size: 12px;
+            font-weight: 600;
         }
         
         .btn {
@@ -274,6 +354,36 @@
             color: #dc3545;
         }
         
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
         .toast {
             position: fixed;
             top: 50%;
@@ -309,14 +419,46 @@
                 <div class="section-title">
                     <i>🔍</i> 设备信息
                 </div>
+                
+                <!-- 设备类型选择 -->
+                <div class="form-group">
+                    <label>设备类型：</label>
+                    <div class="device-type-selector">
+                        <div class="device-option selected" onclick="selectDeviceType('tv')">
+                            <div class="device-icon">📺</div>
+                            <div class="device-name">电视</div>
+                        </div>
+                        <div class="device-option" onclick="selectDeviceType('phone')">
+                            <div class="device-icon">📱</div>
+                            <div class="device-name">手机</div>
+                        </div>
+                        <div class="device-option" onclick="selectDeviceType('tablet')">
+                            <div class="device-icon">📦</div>
+                            <div class="device-name">平板</div>
+                        </div>
+                        <div class="device-option" onclick="selectDeviceType('box')">
+                            <div class="device-icon">🖥️</div>
+                            <div class="device-name">电视盒子</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 设备ID输入 -->
                 <div class="form-group">
                     <label for="deviceId">设备ID：</label>
                     <input type="text" id="deviceId" class="form-control" placeholder="请输入设备ID">
+                    <div id="deviceHelp" class="help-tip">
+                        <strong>如何获取设备ID：</strong><br>
+                        <span id="helpContent">查看电视机身背面标签或系统设置中的"序列号"</span>
+                    </div>
                 </div>
+                
+                <!-- 联系方式 -->
                 <div class="form-group">
                     <label for="contact">联系方式：</label>
                     <input type="text" id="contact" class="form-control" placeholder="手机号或微信号">
                 </div>
+                
                 <button class="btn btn-secondary" onclick="checkDeviceStatus()">
                     查询设备状态
                 </button>
@@ -355,8 +497,29 @@
                 </div>
             </div>
             
+            <!-- 支付方式 -->
+            <div class="section">
+                <div class="section-title">
+                    <i>💳</i> 支付方式
+                </div>
+                <div class="payment-methods">
+                    <div class="payment-option selected" onclick="selectPayment('wechat')">
+                        <div class="payment-icon">💚</div>
+                        <div class="payment-name">微信支付</div>
+                    </div>
+                    <div class="payment-option" onclick="selectPayment('alipay')">
+                        <div class="payment-icon">💙</div>
+                        <div class="payment-name">支付宝</div>
+                    </div>
+                    <div class="payment-option" onclick="selectPayment('bank')">
+                        <div class="payment-icon">💳</div>
+                        <div class="payment-name">银行卡</div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- 购买按钮 -->
-            <button class="btn btn-primary" onclick="processPurchase()">
+            <button class="btn btn-primary" onclick="showPurchaseModal()">
                 立即购买
             </button>
             
@@ -388,10 +551,64 @@
         </div>
     </div>
 
+    <!-- 购买确认模态框 -->
+    <div id="purchaseModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 16px;">💳 确认购买</h3>
+            
+            <div class="form-group">
+                <label>套餐：</label>
+                <div class="form-control" style="background: #f8f9fa;" id="confirmPackage">
+                    年卡 - ¥299
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>设备ID：</label>
+                <div class="form-control" style="background: #f8f9fa;" id="confirmDeviceId">
+                    1234567890
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>支付方式：</label>
+                <div class="form-control" style="background: #f8f9fa;" id="confirmPayment">
+                    微信支付
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closePurchaseModal()">
+                    取消
+                </button>
+                <button class="btn btn-primary" onclick="processPurchase()">
+                    确认支付
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 全局变量
         let selectedPackage = 'yearly';
+        let selectedDeviceType = 'tv';
+        let selectedPayment = 'wechat';
         let orders = [];
+        
+        // 设备类型帮助信息
+        const deviceHelpInfo = {
+            'tv': '查看电视机身背面标签或系统设置中的"序列号"',
+            'phone': '在手机拨号界面输入 *#06# 获取IMEI码',
+            'tablet': '在平板设置-关于设备中查看序列号或IMEI',
+            'box': '查看电视盒子机身底部标签的"序列号"'
+        };
+        
+        // 支付方式显示名称
+        const paymentNames = {
+            'wechat': '微信支付',
+            'alipay': '支付宝',
+            'bank': '银行卡支付'
+        };
         
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
@@ -400,7 +617,33 @@
             if (savedOrders) {
                 orders = JSON.parse(savedOrders);
             }
+            
+            // 显示默认设备类型的帮助信息
+            updateDeviceHelp();
         });
+        
+        // 选择设备类型
+        function selectDeviceType(deviceType) {
+            selectedDeviceType = deviceType;
+            
+            // 更新UI
+            document.querySelectorAll('.device-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // 更新帮助信息
+            updateDeviceHelp();
+        }
+        
+        // 更新设备帮助信息
+        function updateDeviceHelp() {
+            const helpTip = document.getElementById('deviceHelp');
+            const helpContent = document.getElementById('helpContent');
+            
+            helpContent.textContent = deviceHelpInfo[selectedDeviceType];
+            helpTip.style.display = 'block';
+        }
         
         // 选择套餐
         function selectPackage(packageType) {
@@ -411,6 +654,49 @@
                 option.classList.remove('selected');
             });
             event.currentTarget.classList.add('selected');
+        }
+        
+        // 选择支付方式
+        function selectPayment(paymentType) {
+            selectedPayment = paymentType;
+            
+            // 更新UI
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+        
+        // 显示购买确认模态框
+        function showPurchaseModal() {
+            const deviceId = document.getElementById('deviceId').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+            
+            if (!deviceId) {
+                showToast('请输入设备ID');
+                return;
+            }
+            
+            if (!contact) {
+                showToast('请输入联系方式');
+                return;
+            }
+            
+            // 更新确认模态框内容
+            const packageInfo = getPackageInfo(selectedPackage);
+            document.getElementById('confirmPackage').textContent = 
+                `${packageInfo.name} - ¥${packageInfo.price}`;
+            document.getElementById('confirmDeviceId').textContent = deviceId;
+            document.getElementById('confirmPayment').textContent = 
+                paymentNames[selectedPayment];
+            
+            // 显示模态框
+            document.getElementById('purchaseModal').style.display = 'flex';
+        }
+        
+        // 关闭购买模态框
+        function closePurchaseModal() {
+            document.getElementById('purchaseModal').style.display = 'none';
         }
         
         // 检查设备状态
@@ -480,16 +766,6 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             const deviceId = document.getElementById('deviceId').value.trim();
             const contact = document.getElementById('contact').value.trim();
             
-            if (!deviceId) {
-                showToast('请输入设备ID');
-                return;
-            }
-            
-            if (!contact) {
-                showToast('请输入联系方式');
-                return;
-            }
-            
             // 获取套餐信息
             const packageInfo = getPackageInfo(selectedPackage);
             
@@ -500,6 +776,8 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
                 packageType: selectedPackage,
                 deviceId: deviceId,
                 contact: contact,
+                deviceType: selectedDeviceType,
+                paymentMethod: selectedPayment,
                 amount: packageInfo.price,
                 date: new Date().toLocaleString('zh-CN'),
                 status: 'pending'
@@ -508,6 +786,9 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             // 保存订单
             orders.unshift(order);
             localStorage.setItem('device_orders', JSON.stringify(orders));
+            
+            // 关闭模态框
+            closePurchaseModal();
             
             // 显示账单信息
             showBillInfo(order);
@@ -524,8 +805,10 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             const billText = `【设备授权购买账单】
 订单号：${order.id}
 套餐：${order.packageName}
+设备类型：${getDeviceTypeName(order.deviceType)}
 设备ID：${order.deviceId}
 联系方式：${order.contact}
+支付方式：${paymentNames[order.paymentMethod]}
 金额：¥${order.amount}
 购买时间：${order.date}
 
@@ -536,6 +819,18 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             
             // 滚动到结果区域
             resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 获取设备类型名称
+        function getDeviceTypeName(deviceType) {
+            const deviceNames = {
+                'tv': '电视',
+                'phone': '手机',
+                'tablet': '平板',
+                'box': '电视盒子'
+            };
+            
+            return deviceNames[deviceType] || '未知设备';
         }
         
         // 复制到剪贴板
@@ -632,6 +927,14 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             setTimeout(() => {
                 toast.remove();
             }, 2000);
+        }
+        
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('purchaseModal');
+            if (event.target === modal) {
+                closePurchaseModal();
+            }
         }
     </script>
 </body>

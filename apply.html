@@ -236,6 +236,11 @@
             color: #10b981;
         }
         
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
         .order-details {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -283,34 +288,6 @@
         .form-control:focus {
             border-color: var(--primary);
             outline: none;
-        }
-        
-        /* 支付方式 */
-        .payment-methods {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin: 16px 0;
-        }
-        
-        .payment-method {
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 12px 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 12px;
-        }
-        
-        .payment-method.selected {
-            border-color: var(--primary);
-            background: #f8f9ff;
-        }
-        
-        .payment-icon {
-            font-size: 20px;
-            margin-bottom: 4px;
         }
         
         /* 空状态 */
@@ -468,6 +445,29 @@
             color: #dc3545;
         }
         
+        .cart-summary {
+            background: var(--light);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .summary-total {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            border-top: 1px solid #ddd;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -497,8 +497,8 @@
                         <button class="btn-check" onclick="checkDeviceStatus()">
                             查询设备状态
                         </button>
-                        <button class="btn-copy" onclick="showMyApplications()">
-                            我的申请记录
+                        <button class="btn-copy" onclick="showMyOrders()">
+                            我的购买记录
                         </button>
                     </div>
                     <div id="deviceStatusResult" style="margin-top: 16px;"></div>
@@ -637,14 +637,17 @@
                         根据您的使用需求选择合适的时长，推荐选择季卡，性价比最高。
                     </p>
                     
-                    <h4 style="margin-bottom: 12px;">💳 支付方式</h4>
+                    <h4 style="margin-bottom: 12px;">💳 购买流程</h4>
                     <p style="font-size: 14px; margin-bottom: 16px; color: #555;">
-                        支持微信支付、支付宝、银行卡支付。
+                        1. 选择套餐<br>
+                        2. 输入设备ID<br>
+                        3. 复制账单信息<br>
+                        4. 发送给客服开通
                     </p>
                     
                     <h4 style="margin-bottom: 12px;">⏰ 授权生效</h4>
                     <p style="font-size: 14px; margin-bottom: 16px; color: #555;">
-                        支付成功后，授权码将发送到您的邮箱，立即生效。
+                        客服收到账单和设备ID后，会在24小时内为您开通服务。
                     </p>
                     
                     <h4 style="margin-bottom: 12px;">📱 如何获取设备ID？</h4>
@@ -655,7 +658,7 @@
                     </p>
                     
                     <div style="text-align: center; margin-top: 20px;">
-                        <button class="btn-buy" style="width: auto; padding: 10px 20px;">
+                        <button class="btn-buy" style="width: auto; padding: 10px 20px;" onclick="contactCustomerService()">
                             📞 联系客服
                         </button>
                     </div>
@@ -686,41 +689,8 @@
             <h3 style="margin-bottom: 16px;">💳 购买套餐</h3>
             
             <div class="form-group">
-                <label>您的姓名：</label>
-                <input type="text" id="purchaseName" class="form-control" placeholder="请输入真实姓名" required>
-            </div>
-            
-            <div class="form-group">
-                <label>联系方式：</label>
-                <input type="text" id="purchaseContact" class="form-control" placeholder="手机号或微信号" required>
-            </div>
-            
-            <div class="form-group">
                 <label>设备ID：</label>
                 <input type="text" id="purchaseDeviceId" class="form-control" placeholder="请输入设备ID" required>
-            </div>
-            
-            <div class="form-group">
-                <label>邮箱地址：</label>
-                <input type="email" id="purchaseEmail" class="form-control" placeholder="用于接收授权码" required>
-            </div>
-            
-            <div class="form-group">
-                <label>支付方式：</label>
-                <div class="payment-methods">
-                    <div class="payment-method selected" onclick="selectPayment('wechat')">
-                        <div class="payment-icon">💚</div>
-                        <div>微信</div>
-                    </div>
-                    <div class="payment-method" onclick="selectPayment('alipay')">
-                        <div class="payment-icon">💙</div>
-                        <div>支付宝</div>
-                    </div>
-                    <div class="payment-method" onclick="selectPayment('bank')">
-                        <div class="payment-icon">💳</div>
-                        <div>银行卡</div>
-                    </div>
-                </div>
             </div>
             
             <div class="cart-summary">
@@ -752,7 +722,6 @@
     <script>
         // 全局变量
         let orders = [];
-        let selectedPayment = 'wechat';
         let currentPackage = null;
         
         // 初始化页面
@@ -785,10 +754,7 @@
             document.getElementById('modalTotal').textContent = `¥${price}`;
             
             // 清空表单
-            document.getElementById('purchaseName').value = '';
-            document.getElementById('purchaseContact').value = '';
             document.getElementById('purchaseDeviceId').value = '';
-            document.getElementById('purchaseEmail').value = '';
             
             document.getElementById('purchaseModal').style.display = 'flex';
         }
@@ -798,24 +764,12 @@
             document.getElementById('purchaseModal').style.display = 'none';
         }
         
-        // 选择支付方式
-        function selectPayment(method) {
-            selectedPayment = method;
-            document.querySelectorAll('.payment-method').forEach(el => {
-                el.classList.remove('selected');
-            });
-            event.target.closest('.payment-method').classList.add('selected');
-        }
-        
         // 处理购买
         function processPurchase() {
-            const name = document.getElementById('purchaseName').value.trim();
-            const contact = document.getElementById('purchaseContact').value.trim();
             const deviceId = document.getElementById('purchaseDeviceId').value.trim();
-            const email = document.getElementById('purchaseEmail').value.trim();
             
-            if (!name || !contact || !deviceId || !email) {
-                showToast('请填写完整的购买信息');
+            if (!deviceId) {
+                showToast('请输入设备ID');
                 return;
             }
             
@@ -825,12 +779,9 @@
                 packageName: currentPackage.name,
                 packageType: currentPackage.type,
                 deviceId: deviceId,
-                name: name,
-                contact: contact,
-                email: email,
                 amount: currentPackage.price,
-                paymentMethod: selectedPayment,
-                date: new Date().toLocaleString('zh-CN')
+                date: new Date().toLocaleString('zh-CN'),
+                status: 'pending'
             };
             
             // 保存订单
@@ -840,14 +791,42 @@
             // 关闭模态框
             closePurchaseModal();
             
-            // 显示成功消息
-            showToast(`✅ 购买成功！授权码已发送到 ${email}`);
+            // 显示账单信息
+            showBillInfo(order);
             
             // 刷新订单列表
             loadOrders();
+        }
+        
+        // 显示账单信息
+        function showBillInfo(order) {
+            const billText = `【设备授权购买账单】
+订单号：${order.id}
+套餐：${order.packageName}
+设备ID：${order.deviceId}
+金额：¥${order.amount}
+购买时间：${order.date}
+
+请将此信息发送给客服开通服务。`;
             
-            // 切换到订单页面
-            switchTab('orders');
+            const resultDiv = document.getElementById('deviceStatusResult');
+            resultDiv.innerHTML = `
+                <div class="application-data">${billText}</div>
+                <div class="quick-actions">
+                    <button class="btn-copy" onclick="copyToClipboard('${escapeText(billText)}')">
+                        📋 复制账单信息
+                    </button>
+                    <button class="btn-check" onclick="contactCustomerService()">
+                        📞 联系客服
+                    </button>
+                </div>
+                <p style="margin-top: 15px; font-size: 14px; color: #666;">
+                    💡 提示：复制账单信息后，通过微信、QQ等方式发送给客服开通服务
+                </p>
+            `;
+            
+            // 滚动到结果区域
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
         }
         
         // 加载订单历史
@@ -876,7 +855,9 @@
                     <div class="order-card">
                         <div class="order-header">
                             <div class="order-id">${order.id}</div>
-                            <div class="order-status status-completed">已完成</div>
+                            <div class="order-status ${order.status === 'completed' ? 'status-completed' : 'status-pending'}">
+                                ${order.status === 'completed' ? '已完成' : '待开通'}
+                            </div>
                         </div>
                         <div class="order-details">
                             <div class="detail-item">
@@ -896,11 +877,32 @@
                                 <div class="detail-value">${order.date.split(' ')[0]}</div>
                             </div>
                         </div>
+                        <button class="btn-copy" style="margin-top: 10px; padding: 8px 12px; font-size: 12px;" 
+                                onclick="copyOrderInfo('${order.id}')">
+                            复制账单
+                        </button>
                     </div>
                 `;
             });
             
             orderHistory.innerHTML = html;
+        }
+        
+        // 复制订单信息
+        function copyOrderInfo(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                const billText = `【设备授权购买账单】
+订单号：${order.id}
+套餐：${order.packageName}
+设备ID：${order.deviceId}
+金额：¥${order.amount}
+购买时间：${order.date}
+
+请将此信息发送给客服开通服务。`;
+                
+                copyToClipboard(billText);
+            }
         }
         
         // 检查设备状态
@@ -992,79 +994,54 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             });
         }
         
-        // 显示申请记录
-        function showMyApplications() {
+        // 显示我的订单
+        function showMyOrders() {
             const statusResult = document.getElementById('deviceStatusResult');
             
-            try {
-                const applications = JSON.parse(localStorage.getItem('my_applications') || '[]');
-                
-                if (applications.length === 0) {
-                    statusResult.innerHTML = '<div class="info">暂无申请记录</div>';
-                } else {
-                    let html = '';
-                    applications.forEach((app, index) => {
-                        const packageNames = {
-                            'trial': '7天体验卡',
-                            'monthly': '月卡',
-                            'quarterly': '季卡', 
-                            'yearly': '年卡'
-                        };
-                        
-                        html += `
-                            <div class="application-data" style="margin-bottom: 15px;">
-申请ID：${app.application_id}
-姓名：${app.owner}
-联系方式：${app.contact}
-设备类型：${app.device_type}
-设备ID：${app.device_id}
-申请套餐：${packageNames[app.package]}
-申请时间：${app.apply_date}
-状态：${app.status || '待处理'}
-                            </div>
-                            <button class="btn-copy" onclick="copyApplication('${index}')">
-                                复制此申请
-                            </button>
-                            <hr style="margin: 15px 0;">
-                        `;
-                    });
-                    statusResult.innerHTML = html;
-                }
-            } catch (error) {
-                statusResult.innerHTML = '<div class="error">加载申请记录失败</div>';
+            if (orders.length === 0) {
+                statusResult.innerHTML = '<div class="info">暂无购买记录</div>';
+                return;
             }
+            
+            let html = '<h4 style="margin-bottom: 12px;">📋 我的购买记录</h4>';
+            orders.forEach(order => {
+                html += `
+                    <div class="application-data" style="margin-bottom: 15px;">
+订单号：${order.id}
+套餐：${order.packageName}
+设备ID：${order.deviceId}
+金额：¥${order.amount}
+购买时间：${order.date}
+状态：${order.status === 'completed' ? '已开通' : '待开通'}
+                    </div>
+                    <button class="btn-copy" onclick="copyOrderInfo('${order.id}')">
+                        复制此账单
+                    </button>
+                    <hr style="margin: 15px 0;">
+                `;
+            });
+            statusResult.innerHTML = html;
         }
         
-        // 复制特定申请
-        function copyApplication(index) {
-            try {
-                const applications = JSON.parse(localStorage.getItem('my_applications') || '[]');
-                const app = applications[index];
-                
-                if (app) {
-                    const packageNames = {
-                        'trial': '7天体验卡',
-                        'monthly': '月卡',
-                        'quarterly': '季卡', 
-                        'yearly': '年卡'
-                    };
-                    
-                    const applicationText = `【设备授权申请】
-申请ID：${app.application_id}
-姓名：${app.owner}
-联系方式：${app.contact}
-设备类型：${app.device_type}
-设备ID：${app.device_id}
-申请套餐：${packageNames[app.package]}
-申请时间：${app.apply_date}
+        // 联系客服
+        function contactCustomerService() {
+            // 这里可以替换为实际的客服联系方式
+            const serviceInfo = `客服微信：service123
+客服QQ：123456789
+服务时间：9:00-18:00
 
-请将以上信息发送给管理员开通权限。`;
-                    
-                    copyToClipboard(applicationText);
-                }
-            } catch (error) {
-                alert('复制失败');
-            }
+请将账单和设备ID发送给客服开通服务。`;
+            
+            const resultDiv = document.getElementById('deviceStatusResult');
+            resultDiv.innerHTML = `
+                <div class="application-data">${serviceInfo}</div>
+                <button class="btn-copy" onclick="copyToClipboard('${escapeText(serviceInfo)}')">
+                    📋 复制客服信息
+                </button>
+            `;
+            
+            // 滚动到结果区域
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
         }
         
         // 复制到剪贴板
@@ -1098,6 +1075,11 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             }
             
             document.body.removeChild(textArea);
+        }
+        
+        // 转义文本用于JavaScript字符串
+        function escapeText(text) {
+            return text.replace(/\n/g, '\\n').replace(/'/g, "\\'");
         }
         
         // 显示Toast提示
@@ -1136,4 +1118,21 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
         const style = document.createElement('style');
         style.textContent = `
             @keyframes fadeInOut {
-                0% { opacity: 0; transform: translate
+                0% { opacity: 0; transform: translate(-50%, -40%); }
+                20% { opacity: 1; transform: translate(-50%, -50%); }
+                80% { opacity: 1; transform: translate(-50%, -50%); }
+                100% { opacity: 0; transform: translate(-50%, -60%); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('purchaseModal');
+            if (event.target === modal) {
+                closePurchaseModal();
+            }
+        }
+    </script>
+</body>
+</html>

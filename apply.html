@@ -1,623 +1,1015 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>设备授权申请</title>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备授权购买系统</title>
     <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --info: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            font-family: 'Microsoft YaHei', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
         
         .container {
+            max-width: 1200px;
+            margin: 0 auto;
             background: white;
             border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            max-width: 500px;
-            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
         
         .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 30px;
             text-align: center;
-            margin-bottom: 30px;
         }
         
         .header h1 {
-            color: #333;
-            font-size: 28px;
+            font-size: 32px;
+            font-weight: 700;
             margin-bottom: 10px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: var(--dark);
+            list-style: none;
+            justify-content: center;
+        }
+        
+        .nav-tab {
+            padding: 15px 30px;
+            color: white;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab.active {
+            border-bottom-color: var(--success);
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .content {
+            padding: 30px;
+            min-height: 500px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 套餐卡片样式 */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .pricing-card.popular {
+            border-color: var(--warning);
+            transform: scale(1.05);
+        }
+        
+        .pricing-card.popular::before {
+            content: "🔥 热门推荐";
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background: var(--warning);
+            color: white;
+            padding: 5px 30px;
+            transform: rotate(45deg);
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .plan-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .plan-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .plan-price {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .plan-period {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .plan-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .plan-features li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .btn-buy {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .btn-buy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        /* 购物车样式 */
+        .cart-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+        
+        .cart-items {
+            margin: 20px 0;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .cart-item-price {
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .cart-summary {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .summary-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        /* 订单表单样式 */
+        .order-form {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
         .form-group {
             margin-bottom: 20px;
         }
         
-        label {
+        .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
+            font-weight: 600;
+            color: var(--dark);
         }
         
-        input, select, textarea {
+        .form-control {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #ddd;
+            border: 2px solid #e9ecef;
             border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s;
         }
         
-        textarea {
-            height: 100px;
-            resize: vertical;
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
         }
         
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            width: 100%;
-            margin: 10px 0;
-        }
-        
-        .btn-copy {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin: 5px 0;
-        }
-        
-        .btn-check {
-            background: #17a2b8;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin: 5px 0;
-        }
-        
-        .required::after {
-            content: " *";
-            color: red;
-        }
-        
-        .help-text {
-            font-size: 12px;
-            color: #888;
-            margin-top: 5px;
-        }
-        
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            display: none;
-        }
-        
-        .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-        
-        .warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        .application-data {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border-left: 4px solid #007bff;
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 14px;
-        }
-        
-        .device-status {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .status-active {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-expired {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .status-not-found {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status-permanent {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-        
-        .quick-actions {
+        .payment-methods {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 15px 0;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
         }
         
-        .loading {
+        .payment-method {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
             text-align: center;
-            padding: 20px;
-            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s;
         }
         
-        .error {
-            text-align: center;
+        .payment-method.selected {
+            border-color: var(--primary);
+            background: #f8f9ff;
+        }
+        
+        .payment-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        /* 订单历史样式 */
+        .order-history {
+            margin-top: 25px;
+        }
+        
+        .order-card {
+            background: white;
+            border-radius: 10px;
             padding: 20px;
-            color: #dc3545;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .order-id {
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .order-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-completed {
+            background: #e7f7ef;
+            color: #10b981;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #f59e0b;
+        }
+        
+        .status-cancelled {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-card.popular {
+                transform: none;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .order-details {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>📱 设备授权申请</h1>
-            <p>填写信息，提交后联系管理员开通</p>
-        </div>
+        <header class="header">
+            <h1>🎯 设备授权购买系统</h1>
+            <p>选择适合您的授权套餐，享受专业服务</p>
+        </header>
         
-        <!-- 快速操作 -->
-        <div class="quick-actions">
-            <button class="btn-check" onclick="checkDeviceStatus()">
-                🔍 查询设备状态
-            </button>
-            <button class="btn-copy" onclick="showMyApplications()">
-                📋 我的申请记录
-            </button>
-        </div>
+        <nav>
+            <ul class="nav-tabs">
+                <li class="nav-tab active" data-tab="pricing">💰 套餐购买</li>
+                <li class="nav-tab" data-tab="cart">🛒 购物车</li>
+                <li class="nav-tab" data-tab="orders">📋 我的订单</li>
+                <li class="nav-tab" data-tab="help">❓ 购买帮助</li>
+            </ul>
+        </nav>
         
-        <form id="deviceForm">
-            <div class="form-group">
-                <label class="required">您的姓名：</label>
-                <input type="text" name="owner" placeholder="请输入真实姓名" required>
-            </div>
-            
-            <div class="form-group">
-                <label class="required">联系方式：</label>
-                <input type="text" name="contact" placeholder="手机号或微信号" required>
-                <div class="help-text">用于服务通知和续费提醒</div>
-            </div>
-            
-            <div class="form-group">
-                <label class="required">设备类型：</label>
-                <select name="device_type" required>
-                    <option value="">请选择设备类型</option>
-                    <option value="tv">电视</option>
-                    <option value="tv_box">电视盒子</option>
-                    <option value="mobile">手机</option>
-                    <option value="tablet">平板</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label class="required">设备识别码：</label>
-                <input type="text" name="device_id" id="device_id" placeholder="请输入设备序列号或IMEI" required>
-                <div class="help-text">
-                    📺 电视：查看机身背面标签或系统设置中的"序列号"<br>
-                    📱 手机：拨号界面输入 <code>*#06#</code> 获取IMEI<br>
-                    📦 盒子：查看机身底部标签的"序列号"
+        <main class="content">
+            <!-- 套餐购买 -->
+            <div id="pricing" class="tab-content active">
+                <h2>选择授权套餐</h2>
+                <p style="color: #666; margin-bottom: 30px;">根据您的需求选择合适的授权时长，支持多种设备类型</p>
+                
+                <div class="pricing-grid">
+                    <!-- 体验卡 -->
+                    <div class="pricing-card">
+                        <div class="plan-icon">🎁</div>
+                        <div class="plan-name">体验卡</div>
+                        <div class="plan-price">免费</div>
+                        <div class="plan-period">7天体验</div>
+                        <ul class="plan-features">
+                            <li>完整功能体验</li>
+                            <li>基础技术支持</li>
+                            <li>单设备授权</li>
+                            <li>到期提醒服务</li>
+                        </ul>
+                        <button class="btn-buy" onclick="addToCart('trial', '体验卡', 0)">
+                            免费体验
+                        </button>
+                    </div>
+                    
+                    <!-- 月卡 -->
+                    <div class="pricing-card">
+                        <div class="plan-icon">⭐</div>
+                        <div class="plan-name">月卡</div>
+                        <div class="plan-price">¥29</div>
+                        <div class="plan-period">30天授权</div>
+                        <ul class="plan-features">
+                            <li>完整功能使用</li>
+                            <li>优先技术支持</li>
+                            <li>单设备授权</li>
+                            <li>自动续费提醒</li>
+                            <li>专属客服通道</li>
+                        </ul>
+                        <button class="btn-buy" onclick="addToCart('monthly', '月卡', 29)">
+                            立即购买
+                        </button>
+                    </div>
+                    
+                    <!-- 季卡 -->
+                    <div class="pricing-card popular">
+                        <div class="plan-icon">🌟🌟</div>
+                        <div class="plan-name">季卡</div>
+                        <div class="plan-price">¥79</div>
+                        <div class="plan-period">90天授权</div>
+                        <ul class="plan-features">
+                            <li>完整功能使用</li>
+                            <li>24小时技术支持</li>
+                            <li>单设备授权</li>
+                            <li>自动续费提醒</li>
+                            <li>专属客服通道</li>
+                            <li>买3个月送7天</li>
+                        </ul>
+                        <button class="btn-buy" onclick="addToCart('quarterly', '季卡', 79)">
+                            超值购买
+                        </button>
+                    </div>
+                    
+                    <!-- 年卡 -->
+                    <div class="pricing-card">
+                        <div class="plan-icon">🌟🌟🌟</div>
+                        <div class="plan-name">年卡</div>
+                        <div class="plan-price">¥299</div>
+                        <div class="plan-period">365天授权</div>
+                        <ul class="plan-features">
+                            <li>完整功能使用</li>
+                            <li>24小时技术支持</li>
+                            <li>单设备授权</li>
+                            <li>自动续费提醒</li>
+                            <li>专属客服通道</li>
+                            <li>买1年送2个月</li>
+                            <li>专属功能优先体验</li>
+                        </ul>
+                        <button class="btn-buy" onclick="addToCart('yearly', '年卡', 299)">
+                            年度优惠
+                        </button>
+                    </div>
+                    
+                    <!-- 永久授权 -->
+                    <div class="pricing-card">
+                        <div class="plan-icon">🏆</div>
+                        <div class="plan-name">永久授权</div>
+                        <div class="plan-price">¥999</div>
+                        <div class="plan-period">终身使用</div>
+                        <ul class="plan-features">
+                            <li>完整功能终身使用</li>
+                            <li>24小时专属技术支持</li>
+                            <li>单设备永久授权</li>
+                            <li>所有更新免费升级</li>
+                            <li>VIP客服通道</li>
+                            <li>新功能优先体验</li>
+                            <li>专属技术支持群</li>
+                        </ul>
+                        <button class="btn-buy" onclick="addToCart('permanent', '永久授权', 999)">
+                            终身拥有
+                        </button>
+                    </div>
                 </div>
             </div>
             
-            <div class="form-group">
-                <label class="required">套餐选择：</label>
-                <select name="package" required>
-                    <option value="trial">🎁 7天体验卡 (免费体验)</option>
-                    <option value="monthly">⭐ 月卡 (30天)</option>
-                    <option value="quarterly">🌟🌟 季卡 (90天)</option>
-                    <option value="yearly">🌟🌟🌟 年卡 (365天)</option>
-                    <option value="permanent">🏆 永久授权</option>
-                </select>
+            <!-- 购物车 -->
+            <div id="cart" class="tab-content">
+                <h2>🛒 购物车</h2>
+                
+                <div class="cart-section">
+                    <h3>已选套餐</h3>
+                    <div class="cart-items" id="cartItems">
+                        <!-- 购物车商品将通过JavaScript动态加载 -->
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            购物车为空，请先选择套餐
+                        </div>
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <div class="summary-row">
+                            <span>商品总价：</span>
+                            <span id="subtotal">¥0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>优惠折扣：</span>
+                            <span id="discount">-¥0</span>
+                        </div>
+                        <div class="summary-row summary-total">
+                            <span>应付总额：</span>
+                            <span id="total">¥0</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-buy" style="margin-top: 20px;" onclick="proceedToCheckout()">
+                        💳 立即结算
+                    </button>
+                </div>
             </div>
             
-            <button type="submit" class="btn-submit">生成申请信息</button>
-        </form>
-        
-        <div id="result"></div>
-        
-        <!-- 设备状态检查区域 -->
-        <div id="deviceStatus" style="display: none;">
-            <h3>📊 设备状态查询</h3>
-            <div id="statusResult"></div>
-        </div>
-        
-        <!-- 申请记录区域 -->
-        <div id="applicationHistory" style="display: none;">
-            <h3>📋 我的申请记录</h3>
-            <div id="historyList"></div>
+            <!-- 订单历史 -->
+            <div id="orders" class="tab-content">
+                <h2>📋 我的订单</h2>
+                
+                <div class="order-history" id="orderHistory">
+                    <!-- 订单将通过JavaScript动态加载 -->
+                    <div style="text-align: center; padding: 60px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📭</div>
+                        <p>暂无订单记录</p>
+                        <p style="font-size: 14px; margin-top: 10px;">快去选购您需要的授权套餐吧</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 购买帮助 -->
+            <div id="help" class="tab-content">
+                <h2>❓ 购买帮助</h2>
+                
+                <div class="order-form">
+                    <h3>常见问题</h3>
+                    
+                    <div style="margin: 25px 0;">
+                        <h4>🤔 如何选择套餐？</h4>
+                        <p>根据您的使用需求选择合适的时长：</p>
+                        <ul style="margin: 10px 0 20px 20px;">
+                            <li><strong>体验卡</strong>：适合初次体验的用户</li>
+                            <li><strong>月卡</strong>：适合短期使用的用户</li>
+                            <li><strong>季卡</strong>：性价比最高的选择</li>
+                            <li><strong>年卡</strong>：适合长期稳定的用户</li>
+                            <li><strong>永久授权</strong>：一次购买，终身使用</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin: 25px 0;">
+                        <h4>💳 支持哪些支付方式？</h4>
+                        <p>我们支持以下支付方式：</p>
+                        <ul style="margin: 10px 0 20px 20px;">
+                            <li>微信支付</li>
+                            <li>支付宝</li>
+                            <li>银行卡支付</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin: 25px 0;">
+                        <h4>⏰ 授权如何生效？</h4>
+                        <p>支付成功后：</p>
+                        <ul style="margin: 10px 0 20px 20px;">
+                            <li>系统自动发送授权码到您的邮箱</li>
+                            <li>在设备管理页面输入授权码激活</li>
+                            <li>授权立即生效，无需等待</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin: 25px 0;">
+                        <h4>🔄 可以退款吗？</h4>
+                        <p>我们的退款政策：</p>
+                        <ul style="margin: 10px 0 20px 20px;">
+                            <li>体验卡：不支持退款</li>
+                            <li>付费套餐：7天内无条件退款</li>
+                            <li>已激活的授权：不支持退款</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <p>还有其他问题？请联系客服</p>
+                        <button class="btn-buy" style="width: auto; padding: 10px 30px; margin-top: 15px;">
+                            📞 联系客服
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 结算模态框 -->
+    <div id="checkoutModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <h3 style="margin-bottom: 20px;">💳 订单结算</h3>
+            
+            <div class="form-group">
+                <label>设备ID：</label>
+                <input type="text" id="checkoutDeviceId" class="form-control" placeholder="请输入要授权的设备ID" required>
+            </div>
+            
+            <div class="form-group">
+                <label>联系方式：</label>
+                <input type="text" id="checkoutContact" class="form-control" placeholder="手机号或微信号" required>
+            </div>
+            
+            <div class="form-group">
+                <label>邮箱地址：</label>
+                <input type="email" id="checkoutEmail" class="form-control" placeholder="用于接收授权码" required>
+            </div>
+            
+            <div class="form-group">
+                <label>选择支付方式：</label>
+                <div class="payment-methods">
+                    <div class="payment-method selected" onclick="selectPayment('wechat')">
+                        <div class="payment-icon">💚</div>
+                        <div>微信支付</div>
+                    </div>
+                    <div class="payment-method" onclick="selectPayment('alipay')">
+                        <div class="payment-icon">💙</div>
+                        <div>支付宝</div>
+                    </div>
+                    <div class="payment-method" onclick="selectPayment('bank')">
+                        <div class="payment-icon">💳</div>
+                        <div>银行卡</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>商品总价：</span>
+                    <span id="modalSubtotal">¥0</span>
+                </div>
+                <div class="summary-row">
+                    <span>优惠折扣：</span>
+                    <span id="modalDiscount">-¥0</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>应付总额：</span>
+                    <span id="modalTotal">¥0</span>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-buy" onclick="processPayment()">
+                    ✅ 确认支付
+                </button>
+                <button class="btn" onclick="closeCheckoutModal()" style="background: #6c757d; color: white; padding: 10px 20px;">
+                    取消
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // 配置 - 修改为访问本地文件
-        const CONFIG = {
-            DEVICES_JSON_URL: './devices.json', // 改为本地文件路径
-            CACHE_ENABLED: true,
-            CACHE_TIME: 5 * 60 * 1000
-        };
+        // 购物车数据
+        let cart = [];
+        let orders = [];
+        let selectedPayment = 'wechat';
         
-        let devicesData = null;
-        let lastFetchTime = 0;
-        
-        // 初始化
+        // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('设备授权申请页面初始化');
-            console.log('数据源:', CONFIG.DEVICES_JSON_URL);
-            
-            // 预加载设备数据
-            preloadDevicesData();
+            loadCart();
+            loadOrders();
+            setupTabNavigation();
         });
         
-        // 预加载设备数据
-        async function preloadDevicesData() {
-            try {
-                devicesData = await fetchDevicesData();
-                console.log('设备数据预加载成功');
-            } catch (error) {
-                console.log('设备数据预加载失败:', error);
-            }
+        // 设置标签页导航
+        function setupTabNavigation() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有active类
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // 添加active类到当前标签
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab).classList.add('active');
+                });
+            });
         }
         
-        // 获取设备数据 - 从本地文件
-        async function fetchDevicesData() {
-            const now = Date.now();
+        // 添加到购物车
+        function addToCart(type, name, price) {
+            const existingItem = cart.find(item => item.type === type);
             
-            // 检查缓存
-            if (CONFIG.CACHE_ENABLED && devicesData && (now - lastFetchTime) < CONFIG.CACHE_TIME) {
-                return devicesData;
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    type: type,
+                    name: name,
+                    price: price,
+                    quantity: 1
+                });
             }
             
-            try {
-                const response = await fetch(CONFIG.DEVICES_JSON_URL + '?t=' + now);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                devicesData = data;
-                lastFetchTime = now;
-                return data;
-                
-            } catch (error) {
-                throw new Error('无法加载设备数据: ' + error.message);
-            }
+            saveCart();
+            loadCart();
+            
+            // 切换到购物车标签
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector('[data-tab="cart"]').classList.add('active');
+            document.getElementById('cart').classList.add('active');
+            
+            alert(`✅ ${name} 已添加到购物车`);
         }
-
-        // 表单提交处理
-        document.getElementById('deviceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        
+        // 加载购物车
+        function loadCart() {
+            const cartItems = document.getElementById('cartItems');
+            const subtotalElement = document.getElementById('subtotal');
+            const discountElement = document.getElementById('discount');
+            const totalElement = document.getElementById('total');
             
-            const formData = new FormData(this);
-            const application = {
-                owner: formData.get('owner'),
-                contact: formData.get('contact'),
-                device_type: formData.get('device_type'),
-                device_id: formData.get('device_id'),
-                package: formData.get('package'),
-                apply_date: new Date().toLocaleString('zh-CN'),
-                application_id: generateApplicationId(),
-                status: 'pending'
-            };
-            
-            showApplicationResult(application);
-            saveToLocalStorage(application);
-        });
-
-        function generateApplicationId() {
-            return 'APP' + Date.now() + Math.random().toString(36).substr(2, 4).toUpperCase();
-        }
-
-        function showApplicationResult(application) {
-            const resultDiv = document.getElementById('result');
-            const packageNames = {
-                'trial': '7天体验卡',
-                'monthly': '月卡',
-                'quarterly': '季卡', 
-                'yearly': '年卡',
-                'permanent': '永久授权'
-            };
-            
-            const applicationText = `【设备授权申请】
-申请ID：${application.application_id}
-姓名：${application.owner}
-联系方式：${application.contact}
-设备类型：${application.device_type}
-设备ID：${application.device_id}
-申请套餐：${packageNames[application.package]}
-申请时间：${application.apply_date}
-
-请将以上信息发送给管理员开通权限。`;
-            
-            resultDiv.className = 'success';
-            resultDiv.innerHTML = `
-                <h3>✅ 申请信息已生成！</h3>
-                <p>请将以下信息发送给管理员：</p>
-                
-                <div class="application-data">${applicationText}</div>
-                
-                <button class="btn-copy" onclick="copyToClipboard('${escapeText(applicationText)}')">
-                    📋 复制申请信息
-                </button>
-                
-                <p style="margin-top: 15px; font-size: 14px; color: #666;">
-                    💡 提示：复制以上信息后，通过微信、QQ等方式发送给管理员
-                </p>
-            `;
-            
-            resultDiv.style.display = 'block';
-            
-            // 隐藏其他区域
-            document.getElementById('deviceStatus').style.display = 'none';
-            document.getElementById('applicationHistory').style.display = 'none';
-            
-            // 滚动到结果区域
-            resultDiv.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // 检查设备状态
-        async function checkDeviceStatus() {
-            const deviceId = document.getElementById('device_id').value.trim();
-            const statusResult = document.getElementById('statusResult');
-            
-            if (!deviceId) {
-                alert('请输入设备ID进行查询');
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        购物车为空，请先选择套餐
+                    </div>
+                `;
+                subtotalElement.textContent = '¥0';
+                discountElement.textContent = '-¥0';
+                totalElement.textContent = '¥0';
                 return;
             }
             
-            statusResult.innerHTML = '<div class="loading">🔍 查询中...</div>';
+            let html = '';
+            let subtotal = 0;
             
-            try {
-                const data = await fetchDevicesData();
-                const devices = data.authorized_devices || [];
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
                 
-                // 适配新的数据结构（对象数组格式）
-                let device;
-                if (Array.isArray(devices) && devices.length > 0) {
-                    // 如果是对象数组 [{id: "...", expire: "..."}]
-                    if (typeof devices[0] === 'object' && devices[0].id) {
-                        device = devices.find(d => d.id === deviceId);
-                    } 
-                    // 如果是字符串数组 ["id1", "id2"]
-                    else if (typeof devices[0] === 'string') {
-                        device = devices.includes(deviceId) ? { id: deviceId } : null;
-                    }
-                }
-                
-                let statusHtml = '';
-                
-                if (device) {
-                    const isPermanent = device.expire === '永久' || device.package === 'permanent';
-                    const isExpired = !isPermanent && device.expire && new Date(device.expire) < new Date();
-                    const daysRemaining = isPermanent ? '永久' : (device.expire ? Math.ceil((new Date(device.expire) - new Date()) / (1000 * 60 * 60 * 24)) : '未知');
-                    
-                    let statusClass = 'status-active';
-                    let statusText = '✅ 授权有效';
-                    
-                    if (isPermanent) {
-                        statusClass = 'status-permanent';
-                        statusText = '🏆 永久授权';
-                    } else if (isExpired) {
-                        statusClass = 'status-expired';
-                        statusText = '❌ 已过期';
-                    }
-                    
-                    statusHtml = `
-                        <div class="device-status ${statusClass}">
-                            ${statusText}
+                html += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">¥${item.price} × ${item.quantity}</div>
                         </div>
-                        <div class="application-data">
-设备ID：${device.id}
-${device.expire ? `到期日期：${device.expire}` : '授权类型：永久'}
-${!isPermanent && !isExpired ? `剩余天数：${daysRemaining}天` : ''}
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-weight: bold; color: var(--primary);">¥${itemTotal}</span>
+                            <button onclick="removeFromCart(${index})" style="background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                                🗑️
+                            </button>
                         </div>
-                    `;
-                } else {
-                    statusHtml = `
-                        <div class="device-status status-not-found">
-                            ❓ 设备未授权
-                        </div>
-                        <p>该设备尚未获得授权，请提交申请。</p>
-                    `;
-                }
-                
-                statusResult.innerHTML = statusHtml;
-                
-            } catch (error) {
-                statusResult.innerHTML = `
-                    <div class="error">
-                        ❌ 查询失败: ${error.message}
-                        <br>
-                        <button class="btn-check" onclick="checkDeviceStatus()">重试</button>
                     </div>
                 `;
+            });
+            
+            cartItems.innerHTML = html;
+            
+            // 计算折扣（示例：满100减10）
+            const discount = subtotal >= 100 ? 10 : 0;
+            const total = subtotal - discount;
+            
+            subtotalElement.textContent = `¥${subtotal}`;
+            discountElement.textContent = `-¥${discount}`;
+            totalElement.textContent = `¥${total}`;
+        }
+        
+        // 从购物车移除
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            loadCart();
+        }
+        
+        // 保存购物车到本地存储
+        function saveCart() {
+            localStorage.setItem('purchase_cart', JSON.stringify(cart));
+        }
+        
+        // 从本地存储加载购物车
+        function loadCart() {
+            const savedCart = localStorage.getItem('purchase_cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+            renderCart();
+        }
+        
+        // 渲染购物车
+        function renderCart() {
+            loadCart(); // 调用现有的loadCart函数
+        }
+        
+        // 加载订单历史
+        function loadOrders() {
+            const orderHistory = document.getElementById('orderHistory');
+            const savedOrders = localStorage.getItem('purchase_orders');
+            
+            if (savedOrders) {
+                orders = JSON.parse(savedOrders);
             }
             
-            // 显示状态区域，隐藏其他区域
-            document.getElementById('deviceStatus').style.display = 'block';
-            document.getElementById('result').style.display = 'none';
-            document.getElementById('applicationHistory').style.display = 'none';
+            if (orders.length === 0) {
+                orderHistory.innerHTML = `
+                    <div style="text-align: center; padding: 60px; color: #666;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">📭</div>
+                        <p>暂无订单记录</p>
+                        <p style="font-size: 14px; margin-top: 10px;">快去选购您需要的授权套餐吧</p>
+                    </div>
+                `;
+                return;
+            }
             
-            document.getElementById('deviceStatus').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // 显示申请记录
-        function showMyApplications() {
-            const historyList = document.getElementById('historyList');
-            
-            try {
-                const applications = JSON.parse(localStorage.getItem('my_applications') || '[]');
+            let html = '';
+            orders.forEach(order => {
+                const statusClass = `status-${order.status}`;
+                const statusText = {
+                    'completed': '已完成',
+                    'pending': '处理中',
+                    'cancelled': '已取消'
+                }[order.status] || order.status;
                 
-                if (applications.length === 0) {
-                    historyList.innerHTML = '<div class="info">暂无申请记录</div>';
-                } else {
-                    let html = '';
-                    applications.forEach((app, index) => {
-                        const packageNames = {
-                            'trial': '7天体验卡',
-                            'monthly': '月卡',
-                            'quarterly': '季卡', 
-                            'yearly': '年卡',
-                            'permanent': '永久授权'
-                        };
-                        
-                        html += `
-                            <div class="application-data" style="margin-bottom: 15px;">
-申请ID：${app.application_id}
-姓名：${app.owner}
-联系方式：${app.contact}
-设备类型：${app.device_type}
-设备ID：${app.device_id}
-申请套餐：${packageNames[app.package]}
-申请时间：${app.apply_date}
-状态：${app.status || '待处理'}
+                html += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-id">订单号: ${order.id}</div>
+                            <div class="order-status ${statusClass}">${statusText}</div>
+                        </div>
+                        <div class="order-details">
+                            <div class="detail-item">
+                                <div class="detail-label">套餐类型</div>
+                                <div class="detail-value">${order.packageName}</div>
                             </div>
-                            <button class="btn-copy" onclick="copyApplication('${index}')">
-                                复制此申请
-                            </button>
-                            <hr style="margin: 15px 0;">
-                        `;
-                    });
-                    historyList.innerHTML = html;
-                }
-            } catch (error) {
-                historyList.innerHTML = '<div class="error">加载申请记录失败</div>';
+                            <div class="detail-item">
+                                <div class="detail-label">设备ID</div>
+                                <div class="detail-value">${order.deviceId}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">支付金额</div>
+                                <div class="detail-value">¥${order.amount}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">下单时间</div>
+                                <div class="detail-value">${order.date}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            orderHistory.innerHTML = html;
+        }
+        
+        // 选择支付方式
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.target.closest('.payment-method').classList.add('selected');
+        }
+        
+        // 打开结算模态框
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                alert('请先选择要购买的套餐');
+                return;
             }
             
-            // 显示历史区域，隐藏其他区域
-            document.getElementById('applicationHistory').style.display = 'block';
-            document.getElementById('result').style.display = 'none';
-            document.getElementById('deviceStatus').style.display = 'none';
+            // 更新模态框中的金额
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const discount = subtotal >= 100 ? 10 : 0;
+            const total = subtotal - discount;
             
-            document.getElementById('applicationHistory').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('modalSubtotal').textContent = `¥${subtotal}`;
+            document.getElementById('modalDiscount').textContent = `-¥${discount}`;
+            document.getElementById('modalTotal').textContent = `¥${total}`;
+            
+            document.getElementById('checkoutModal').style.display = 'flex';
         }
-
-        // 复制特定申请
-        function copyApplication(index) {
-            try {
-                const applications = JSON.parse(localStorage.getItem('my_applications') || '[]');
-                const app = applications[index];
-                
-                if (app) {
-                    const packageNames = {
-                        'trial': '7天体验卡',
-                        'monthly': '月卡',
-                        'quarterly': '季卡', 
-                        'yearly': '年卡',
-                        'permanent': '永久授权'
-                    };
-                    
-                    const applicationText = `【设备授权申请】
-申请ID：${app.application_id}
-姓名：${app.owner}
-联系方式：${app.contact}
-设备类型：${app.device_type}
-设备ID：${app.device_id}
-申请套餐：${packageNames[app.package]}
-申请时间：${app.apply_date}
-
-请将以上信息发送给管理员开通权限。`;
-                    
-                    copyToClipboard(applicationText);
-                }
-            } catch (error) {
-                alert('复制失败');
+        
+        // 关闭结算模态框
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+        
+        // 处理支付
+        function processPayment() {
+            const deviceId = document.getElementById('checkoutDeviceId').value.trim();
+            const contact = document.getElementById('checkoutContact').value.trim();
+            const email = document.getElementById('checkoutEmail').value.trim();
+            
+            if (!deviceId || !contact || !email) {
+                alert('请填写完整的订单信息');
+                return;
+            }
+            
+            // 计算总金额
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const discount = subtotal >= 100 ? 10 : 0;
+            const total = subtotal - discount;
+            
+            // 创建订单
+            const order = {
+                id: 'ORD' + Date.now(),
+                packageName: cart.map(item => item.name).join(', '),
+                packageType: cart[0].type, // 取第一个套餐类型
+                deviceId: deviceId,
+                contact: contact,
+                email: email,
+                amount: total,
+                paymentMethod: selectedPayment,
+                date: new Date().toLocaleString('zh-CN'),
+                status: 'completed'
+            };
+            
+            // 保存订单
+            orders.unshift(order);
+            localStorage.setItem('purchase_orders', JSON.stringify(orders));
+            
+            // 清空购物车
+            cart = [];
+            saveCart();
+            
+            // 关闭模态框
+            closeCheckoutModal();
+            
+            // 显示成功消息
+            alert(`✅ 支付成功！\n\n订单号: ${order.id}\n授权码已发送到您的邮箱: ${email}\n\n请在设备管理页面使用授权码激活设备。`);
+            
+            // 刷新页面
+            loadCart();
+            loadOrders();
+            
+            // 切换到订单页面
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector('[data-tab="orders"]').classList.add('active');
+            document.getElementById('orders').classList.add('active');
+        }
+        
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('checkoutModal');
+            if (event.target === modal) {
+                closeCheckoutModal();
             }
         }
         
-        // 复制到剪贴板
-        function copyToClipboard(text) {
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('✅ 信息已复制到剪贴板！');
-                }).catch(err => {
-                    fallbackCopyToClipboard(text);
-                });
-            } else {
-                fallbackCopyToClipboard(text);
+        // 模态框样式
+        const style = document.createElement('style');
+        style.textContent = `
+            .modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
             }
-        }
-        
-        function fallbackCopyToClipboard(text) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                alert('✅ 信息已复制到剪贴板！');
-            } catch (err) {
-                alert('❌ 复制失败，请手动选择复制');
+            .modal-content {
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             }
-            
-            document.body.removeChild(textArea);
-        }
-        
-        // 转义文本用于JavaScript字符串
-        function escapeText(text) {
-            return text.replace(/\n/g, '\\n').replace(/'/g, "\\'");
-        }
-        
-        function saveToLocalStorage(application) {
-            try {
-                let applications = JSON.parse(localStorage.getItem('my_applications') || '[]');
-                applications.unshift(application);
-                applications = applications.slice(0, 20);
-                localStorage.setItem('my_applications', JSON.stringify(applications));
-            } catch (e) {
-                console.log('本地存储失败，但不影响使用');
+            .modal-actions {
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+                margin-top: 25px;
             }
-        }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

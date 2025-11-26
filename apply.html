@@ -2,16 +2,15 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>设备授权购买系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>设备授权购买</title>
     <style>
         :root {
             --primary: #4361ee;
-            --secondary: #3f37c9;
+            --secondary: #3a0ca3;
             --success: #4cc9f0;
             --danger: #f72585;
             --warning: #f8961e;
-            --info: #4895ef;
             --light: #f8f9fa;
             --dark: #212529;
         }
@@ -20,198 +19,211 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
+            line-height: 1.5;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .mobile-container {
+            max-width: 100%;
+            min-height: 100vh;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
+            position: relative;
         }
         
+        /* 头部 */
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 30px;
+            padding: 20px 16px;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .header h1 {
-            font-size: 32px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 4px;
         }
         
-        .nav-tabs {
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
             display: flex;
-            background: var(--dark);
-            list-style: none;
-            justify-content: center;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
         }
         
-        .nav-tab {
-            padding: 15px 30px;
-            color: white;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            font-size: 12px;
+            color: #666;
+            text-decoration: none;
         }
         
-        .nav-tab.active {
-            border-bottom-color: var(--success);
-            background: rgba(255,255,255,0.1);
+        .nav-item.active {
+            color: var(--primary);
         }
         
-        .content {
-            padding: 30px;
-            min-height: 500px;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 2px;
             display: block;
-            animation: fadeIn 0.5s;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* 主内容区 */
+        .main-content {
+            padding: 16px;
+            padding-bottom: 80px; /* 为底部导航留出空间 */
         }
         
-        /* 套餐卡片样式 */
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin: 30px 0;
+        /* 套餐卡片 */
+        .pricing-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0;
         }
         
         .pricing-card {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border: 3px solid transparent;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
         }
         
         .pricing-card.popular {
             border-color: var(--warning);
-            transform: scale(1.05);
+            background: linear-gradient(135deg, #fffaf0 0%, #fff5e6 100%);
         }
         
-        .pricing-card.popular::before {
-            content: "🔥 热门推荐";
-            position: absolute;
-            top: 15px;
-            right: -30px;
-            background: var(--warning);
-            color: white;
-            padding: 5px 30px;
-            transform: rotate(45deg);
-            font-size: 12px;
-            font-weight: bold;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .plan-info {
+            flex: 1;
         }
         
         .plan-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 24px;
+            margin-bottom: 4px;
         }
         
         .plan-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 600;
             color: var(--dark);
+            margin-bottom: 2px;
         }
         
         .plan-price {
-            font-size: 36px;
-            font-weight: bold;
+            font-size: 20px;
+            font-weight: 700;
             color: var(--primary);
-            margin-bottom: 5px;
         }
         
         .plan-period {
+            font-size: 12px;
             color: #666;
-            margin-bottom: 20px;
+        }
+        
+        .popular-badge {
+            background: var(--warning);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
         }
         
         .plan-features {
             list-style: none;
-            margin: 20px 0;
-            text-align: left;
+            margin: 12px 0;
         }
         
         .plan-features li {
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 6px 0;
+            font-size: 13px;
+            color: #555;
+            display: flex;
+            align-items: center;
         }
         
         .plan-features li::before {
             content: "✓";
             color: var(--success);
             font-weight: bold;
-            margin-right: 10px;
+            margin-right: 8px;
+            font-size: 14px;
         }
         
         .btn-buy {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 12px 20px;
             border-radius: 25px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
             transition: all 0.3s;
         }
         
-        .btn-buy:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        .btn-buy:active {
+            transform: scale(0.98);
         }
         
-        /* 购物车样式 */
+        /* 购物车 */
         .cart-section {
             background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 16px 0;
         }
         
         .cart-items {
-            margin: 20px 0;
+            margin: 12px 0;
         }
         
         .cart-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
         }
         
         .cart-item-info {
@@ -220,106 +232,58 @@
         
         .cart-item-name {
             font-weight: 600;
-            font-size: 16px;
+            font-size: 14px;
         }
         
         .cart-item-price {
             color: var(--primary);
-            font-weight: bold;
+            font-size: 13px;
+        }
+        
+        .remove-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
         }
         
         .cart-summary {
             background: var(--light);
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
         }
         
         .summary-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
         
         .summary-total {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--primary);
-            border-top: 2px solid #ddd;
-            padding-top: 10px;
-            margin-top: 10px;
-        }
-        
-        /* 订单表单样式 */
-        .order-form {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            font-weight: 700;
+            color: var(--primary);
+            border-top: 1px solid #ddd;
+            padding-top: 8px;
+            margin-top: 8px;
         }
         
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-        
-        .payment-methods {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .payment-method {
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .payment-method.selected {
-            border-color: var(--primary);
-            background: #f8f9ff;
-        }
-        
-        .payment-icon {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        
-        /* 订单历史样式 */
-        .order-history {
-            margin-top: 25px;
-        }
-        
+        /* 订单历史 */
         .order-card {
             background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 12px;
             border-left: 4px solid var(--success);
         }
         
@@ -327,18 +291,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .order-id {
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
             color: var(--dark);
         }
         
         .order-status {
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
             font-weight: 600;
         }
         
@@ -347,31 +312,20 @@
             color: #10b981;
         }
         
-        .status-pending {
-            background: #fff3cd;
-            color: #f59e0b;
-        }
-        
-        .status-cancelled {
-            background: #fef2f2;
-            color: #ef4444;
-        }
-        
         .order-details {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
         }
         
         .detail-item {
-            text-align: center;
+            margin-bottom: 4px;
         }
         
         .detail-label {
-            font-size: 12px;
             color: #666;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
         
         .detail-value {
@@ -379,60 +333,175 @@
             color: var(--dark);
         }
         
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .pricing-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .pricing-card.popular {
-                transform: none;
-            }
-            
-            .nav-tabs {
-                flex-direction: column;
-            }
-            
-            .order-details {
-                grid-template-columns: 1fr;
-            }
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            -webkit-appearance: none;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        /* 支付方式 */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 16px 0;
+        }
+        
+        .payment-method {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        
+        .payment-method.selected {
+            border-color: var(--primary);
+            background: #f8f9ff;
+        }
+        
+        .payment-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* 标签页内容 */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="mobile-container">
+        <!-- 头部 -->
         <header class="header">
-            <h1>🎯 设备授权购买系统</h1>
-            <p>选择适合您的授权套餐，享受专业服务</p>
+            <h1>📱 设备授权购买</h1>
+            <p>选择套餐，立即开通服务</p>
         </header>
         
-        <nav>
-            <ul class="nav-tabs">
-                <li class="nav-tab active" data-tab="pricing">💰 套餐购买</li>
-                <li class="nav-tab" data-tab="cart">🛒 购物车</li>
-                <li class="nav-tab" data-tab="orders">📋 我的订单</li>
-                <li class="nav-tab" data-tab="help">❓ 购买帮助</li>
-            </ul>
-        </nav>
-        
-        <main class="content">
+        <!-- 主内容 -->
+        <main class="main-content">
             <!-- 套餐购买 -->
             <div id="pricing" class="tab-content active">
-                <h2>选择授权套餐</h2>
-                <p style="color: #666; margin-bottom: 30px;">根据您的需求选择合适的授权时长，支持多种设备类型</p>
-                
-                <div class="pricing-grid">
+                <div class="pricing-cards">
                     <!-- 体验卡 -->
                     <div class="pricing-card">
-                        <div class="plan-icon">🎁</div>
-                        <div class="plan-name">体验卡</div>
-                        <div class="plan-price">免费</div>
-                        <div class="plan-period">7天体验</div>
+                        <div class="card-header">
+                            <div class="plan-info">
+                                <div class="plan-icon">🎁</div>
+                                <div class="plan-name">体验卡</div>
+                                <div class="plan-price">免费</div>
+                                <div class="plan-period">7天体验</div>
+                            </div>
+                        </div>
                         <ul class="plan-features">
                             <li>完整功能体验</li>
                             <li>基础技术支持</li>
                             <li>单设备授权</li>
-                            <li>到期提醒服务</li>
+                            <li>到期提醒</li>
                         </ul>
                         <button class="btn-buy" onclick="addToCart('trial', '体验卡', 0)">
                             免费体验
@@ -441,16 +510,19 @@
                     
                     <!-- 月卡 -->
                     <div class="pricing-card">
-                        <div class="plan-icon">⭐</div>
-                        <div class="plan-name">月卡</div>
-                        <div class="plan-price">¥29</div>
-                        <div class="plan-period">30天授权</div>
+                        <div class="card-header">
+                            <div class="plan-info">
+                                <div class="plan-icon">⭐</div>
+                                <div class="plan-name">月卡</div>
+                                <div class="plan-price">¥29</div>
+                                <div class="plan-period">30天授权</div>
+                            </div>
+                        </div>
                         <ul class="plan-features">
                             <li>完整功能使用</li>
                             <li>优先技术支持</li>
                             <li>单设备授权</li>
                             <li>自动续费提醒</li>
-                            <li>专属客服通道</li>
                         </ul>
                         <button class="btn-buy" onclick="addToCart('monthly', '月卡', 29)">
                             立即购买
@@ -459,16 +531,20 @@
                     
                     <!-- 季卡 -->
                     <div class="pricing-card popular">
-                        <div class="plan-icon">🌟🌟</div>
-                        <div class="plan-name">季卡</div>
-                        <div class="plan-price">¥79</div>
-                        <div class="plan-period">90天授权</div>
+                        <div class="card-header">
+                            <div class="plan-info">
+                                <div class="plan-icon">🌟🌟</div>
+                                <div class="plan-name">季卡</div>
+                                <div class="plan-price">¥79</div>
+                                <div class="plan-period">90天授权</div>
+                            </div>
+                            <div class="popular-badge">热门</div>
+                        </div>
                         <ul class="plan-features">
                             <li>完整功能使用</li>
                             <li>24小时技术支持</li>
                             <li>单设备授权</li>
                             <li>自动续费提醒</li>
-                            <li>专属客服通道</li>
                             <li>买3个月送7天</li>
                         </ul>
                         <button class="btn-buy" onclick="addToCart('quarterly', '季卡', 79)">
@@ -478,18 +554,20 @@
                     
                     <!-- 年卡 -->
                     <div class="pricing-card">
-                        <div class="plan-icon">🌟🌟🌟</div>
-                        <div class="plan-name">年卡</div>
-                        <div class="plan-price">¥299</div>
-                        <div class="plan-period">365天授权</div>
+                        <div class="card-header">
+                            <div class="plan-info">
+                                <div class="plan-icon">🌟🌟🌟</div>
+                                <div class="plan-name">年卡</div>
+                                <div class="plan-price">¥299</div>
+                                <div class="plan-period">365天授权</div>
+                            </div>
+                        </div>
                         <ul class="plan-features">
                             <li>完整功能使用</li>
                             <li>24小时技术支持</li>
                             <li>单设备授权</li>
                             <li>自动续费提醒</li>
-                            <li>专属客服通道</li>
                             <li>买1年送2个月</li>
-                            <li>专属功能优先体验</li>
                         </ul>
                         <button class="btn-buy" onclick="addToCart('yearly', '年卡', 299)">
                             年度优惠
@@ -498,18 +576,20 @@
                     
                     <!-- 永久授权 -->
                     <div class="pricing-card">
-                        <div class="plan-icon">🏆</div>
-                        <div class="plan-name">永久授权</div>
-                        <div class="plan-price">¥999</div>
-                        <div class="plan-period">终身使用</div>
+                        <div class="card-header">
+                            <div class="plan-info">
+                                <div class="plan-icon">🏆</div>
+                                <div class="plan-name">永久授权</div>
+                                <div class="plan-price">¥999</div>
+                                <div class="plan-period">终身使用</div>
+                            </div>
+                        </div>
                         <ul class="plan-features">
                             <li>完整功能终身使用</li>
-                            <li>24小时专属技术支持</li>
+                            <li>24小时专属支持</li>
                             <li>单设备永久授权</li>
-                            <li>所有更新免费升级</li>
+                            <li>所有更新免费</li>
                             <li>VIP客服通道</li>
-                            <li>新功能优先体验</li>
-                            <li>专属技术支持群</li>
                         </ul>
                         <button class="btn-buy" onclick="addToCart('permanent', '永久授权', 999)">
                             终身拥有
@@ -520,14 +600,13 @@
             
             <!-- 购物车 -->
             <div id="cart" class="tab-content">
-                <h2>🛒 购物车</h2>
-                
                 <div class="cart-section">
-                    <h3>已选套餐</h3>
+                    <h3 style="margin-bottom: 16px;">🛒 购物车</h3>
                     <div class="cart-items" id="cartItems">
-                        <!-- 购物车商品将通过JavaScript动态加载 -->
-                        <div style="text-align: center; padding: 40px; color: #666;">
-                            购物车为空，请先选择套餐
+                        <div class="empty-state">
+                            <div class="empty-icon">🛒</div>
+                            <p>购物车为空</p>
+                            <p style="font-size: 12px; margin-top: 4px;">请先选择套餐</p>
                         </div>
                     </div>
                     
@@ -546,7 +625,7 @@
                         </div>
                     </div>
                     
-                    <button class="btn-buy" style="margin-top: 20px;" onclick="proceedToCheckout()">
+                    <button class="btn-buy" style="margin-top: 16px;" onclick="proceedToCheckout()">
                         💳 立即结算
                     </button>
                 </div>
@@ -554,86 +633,73 @@
             
             <!-- 订单历史 -->
             <div id="orders" class="tab-content">
-                <h2>📋 我的订单</h2>
-                
-                <div class="order-history" id="orderHistory">
-                    <!-- 订单将通过JavaScript动态加载 -->
-                    <div style="text-align: center; padding: 60px; color: #666;">
-                        <div style="font-size: 48px; margin-bottom: 20px;">📭</div>
+                <h3 style="margin-bottom: 16px;">📋 我的订单</h3>
+                <div id="orderHistory">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
                         <p>暂无订单记录</p>
-                        <p style="font-size: 14px; margin-top: 10px;">快去选购您需要的授权套餐吧</p>
+                        <p style="font-size: 12px; margin-top: 4px;">快去选购套餐吧</p>
                     </div>
                 </div>
             </div>
             
             <!-- 购买帮助 -->
             <div id="help" class="tab-content">
-                <h2>❓ 购买帮助</h2>
-                
-                <div class="order-form">
-                    <h3>常见问题</h3>
+                <h3 style="margin-bottom: 16px;">❓ 购买帮助</h3>
+                <div class="cart-section">
+                    <h4 style="margin-bottom: 12px;">🤔 如何选择套餐？</h4>
+                    <p style="font-size: 14px; margin-bottom: 16px; color: #555;">
+                        根据您的使用需求选择合适的时长，推荐选择季卡，性价比最高。
+                    </p>
                     
-                    <div style="margin: 25px 0;">
-                        <h4>🤔 如何选择套餐？</h4>
-                        <p>根据您的使用需求选择合适的时长：</p>
-                        <ul style="margin: 10px 0 20px 20px;">
-                            <li><strong>体验卡</strong>：适合初次体验的用户</li>
-                            <li><strong>月卡</strong>：适合短期使用的用户</li>
-                            <li><strong>季卡</strong>：性价比最高的选择</li>
-                            <li><strong>年卡</strong>：适合长期稳定的用户</li>
-                            <li><strong>永久授权</strong>：一次购买，终身使用</li>
-                        </ul>
-                    </div>
+                    <h4 style="margin-bottom: 12px;">💳 支付方式</h4>
+                    <p style="font-size: 14px; margin-bottom: 16px; color: #555;">
+                        支持微信支付、支付宝、银行卡支付。
+                    </p>
                     
-                    <div style="margin: 25px 0;">
-                        <h4>💳 支持哪些支付方式？</h4>
-                        <p>我们支持以下支付方式：</p>
-                        <ul style="margin: 10px 0 20px 20px;">
-                            <li>微信支付</li>
-                            <li>支付宝</li>
-                            <li>银行卡支付</li>
-                        </ul>
-                    </div>
+                    <h4 style="margin-bottom: 12px;">⏰ 授权生效</h4>
+                    <p style="font-size: 14px; margin-bottom: 16px; color: #555;">
+                        支付成功后，授权码将发送到您的邮箱，立即生效。
+                    </p>
                     
-                    <div style="margin: 25px 0;">
-                        <h4>⏰ 授权如何生效？</h4>
-                        <p>支付成功后：</p>
-                        <ul style="margin: 10px 0 20px 20px;">
-                            <li>系统自动发送授权码到您的邮箱</li>
-                            <li>在设备管理页面输入授权码激活</li>
-                            <li>授权立即生效，无需等待</li>
-                        </ul>
-                    </div>
-                    
-                    <div style="margin: 25px 0;">
-                        <h4>🔄 可以退款吗？</h4>
-                        <p>我们的退款政策：</p>
-                        <ul style="margin: 10px 0 20px 20px;">
-                            <li>体验卡：不支持退款</li>
-                            <li>付费套餐：7天内无条件退款</li>
-                            <li>已激活的授权：不支持退款</li>
-                        </ul>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 30px;">
-                        <p>还有其他问题？请联系客服</p>
-                        <button class="btn-buy" style="width: auto; padding: 10px 30px; margin-top: 15px;">
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn-buy" style="width: auto; padding: 10px 20px;">
                             📞 联系客服
                         </button>
                     </div>
                 </div>
             </div>
         </main>
+        
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <a class="nav-item active" onclick="switchTab('pricing')">
+                <span class="nav-icon">💰</span>
+                <span>套餐</span>
+            </a>
+            <a class="nav-item" onclick="switchTab('cart')">
+                <span class="nav-icon">🛒</span>
+                <span>购物车</span>
+            </a>
+            <a class="nav-item" onclick="switchTab('orders')">
+                <span class="nav-icon">📋</span>
+                <span>订单</span>
+            </a>
+            <a class="nav-item" onclick="switchTab('help')">
+                <span class="nav-icon">❓</span>
+                <span>帮助</span>
+            </a>
+        </nav>
     </div>
 
     <!-- 结算模态框 -->
-    <div id="checkoutModal" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 500px;">
-            <h3 style="margin-bottom: 20px;">💳 订单结算</h3>
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 16px;">💳 订单结算</h3>
             
             <div class="form-group">
                 <label>设备ID：</label>
-                <input type="text" id="checkoutDeviceId" class="form-control" placeholder="请输入要授权的设备ID" required>
+                <input type="text" id="checkoutDeviceId" class="form-control" placeholder="请输入设备ID" required>
             </div>
             
             <div class="form-group">
@@ -647,11 +713,11 @@
             </div>
             
             <div class="form-group">
-                <label>选择支付方式：</label>
+                <label>支付方式：</label>
                 <div class="payment-methods">
                     <div class="payment-method selected" onclick="selectPayment('wechat')">
                         <div class="payment-icon">💚</div>
-                        <div>微信支付</div>
+                        <div>微信</div>
                     </div>
                     <div class="payment-method" onclick="selectPayment('alipay')">
                         <div class="payment-icon">💙</div>
@@ -680,11 +746,11 @@
             </div>
             
             <div class="modal-actions">
-                <button class="btn-buy" onclick="processPayment()">
-                    ✅ 确认支付
-                </button>
-                <button class="btn" onclick="closeCheckoutModal()" style="background: #6c757d; color: white; padding: 10px 20px;">
+                <button class="btn btn-secondary" onclick="closeCheckoutModal()">
                     取消
+                </button>
+                <button class="btn btn-primary" onclick="processPayment()">
+                    确认支付
                 </button>
             </div>
         </div>
@@ -700,23 +766,21 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadCart();
             loadOrders();
-            setupTabNavigation();
         });
         
-        // 设置标签页导航
-        function setupTabNavigation() {
-            const tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // 移除所有active类
-                    tabs.forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    // 添加active类到当前标签
-                    this.classList.add('active');
-                    document.getElementById(this.dataset.tab).classList.add('active');
-                });
+        // 切换标签页
+        function switchTab(tabName) {
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
             });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // 更新内容显示
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
         }
         
         // 添加到购物车
@@ -738,12 +802,10 @@
             loadCart();
             
             // 切换到购物车标签
-            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector('[data-tab="cart"]').classList.add('active');
-            document.getElementById('cart').classList.add('active');
+            switchTab('cart');
             
-            alert(`✅ ${name} 已添加到购物车`);
+            // 显示添加成功提示
+            showToast(`✅ ${name} 已添加到购物车`);
         }
         
         // 加载购物车
@@ -755,8 +817,10 @@
             
             if (cart.length === 0) {
                 cartItems.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #666;">
-                        购物车为空，请先选择套餐
+                    <div class="empty-state">
+                        <div class="empty-icon">🛒</div>
+                        <p>购物车为空</p>
+                        <p style="font-size: 12px; margin-top: 4px;">请先选择套餐</p>
                     </div>
                 `;
                 subtotalElement.textContent = '¥0';
@@ -778,19 +842,16 @@
                             <div class="cart-item-name">${item.name}</div>
                             <div class="cart-item-price">¥${item.price} × ${item.quantity}</div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-weight: bold; color: var(--primary);">¥${itemTotal}</span>
-                            <button onclick="removeFromCart(${index})" style="background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
-                                🗑️
-                            </button>
-                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">
+                            🗑️
+                        </button>
                     </div>
                 `;
             });
             
             cartItems.innerHTML = html;
             
-            // 计算折扣（示例：满100减10）
+            // 计算折扣
             const discount = subtotal >= 100 ? 10 : 0;
             const total = subtotal - discount;
             
@@ -806,14 +867,14 @@
             loadCart();
         }
         
-        // 保存购物车到本地存储
+        // 保存购物车
         function saveCart() {
-            localStorage.setItem('purchase_cart', JSON.stringify(cart));
+            localStorage.setItem('mobile_cart', JSON.stringify(cart));
         }
         
-        // 从本地存储加载购物车
+        // 加载购物车
         function loadCart() {
-            const savedCart = localStorage.getItem('purchase_cart');
+            const savedCart = localStorage.getItem('mobile_cart');
             if (savedCart) {
                 cart = JSON.parse(savedCart);
             }
@@ -822,13 +883,13 @@
         
         // 渲染购物车
         function renderCart() {
-            loadCart(); // 调用现有的loadCart函数
+            loadCart();
         }
         
         // 加载订单历史
         function loadOrders() {
             const orderHistory = document.getElementById('orderHistory');
-            const savedOrders = localStorage.getItem('purchase_orders');
+            const savedOrders = localStorage.getItem('mobile_orders');
             
             if (savedOrders) {
                 orders = JSON.parse(savedOrders);
@@ -836,10 +897,10 @@
             
             if (orders.length === 0) {
                 orderHistory.innerHTML = `
-                    <div style="text-align: center; padding: 60px; color: #666;">
-                        <div style="font-size: 48px; margin-bottom: 20px;">📭</div>
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
                         <p>暂无订单记录</p>
-                        <p style="font-size: 14px; margin-top: 10px;">快去选购您需要的授权套餐吧</p>
+                        <p style="font-size: 12px; margin-top: 4px;">快去选购套餐吧</p>
                     </div>
                 `;
                 return;
@@ -847,22 +908,15 @@
             
             let html = '';
             orders.forEach(order => {
-                const statusClass = `status-${order.status}`;
-                const statusText = {
-                    'completed': '已完成',
-                    'pending': '处理中',
-                    'cancelled': '已取消'
-                }[order.status] || order.status;
-                
                 html += `
                     <div class="order-card">
                         <div class="order-header">
-                            <div class="order-id">订单号: ${order.id}</div>
-                            <div class="order-status ${statusClass}">${statusText}</div>
+                            <div class="order-id">${order.id}</div>
+                            <div class="order-status status-completed">已完成</div>
                         </div>
                         <div class="order-details">
                             <div class="detail-item">
-                                <div class="detail-label">套餐类型</div>
+                                <div class="detail-label">套餐</div>
                                 <div class="detail-value">${order.packageName}</div>
                             </div>
                             <div class="detail-item">
@@ -870,12 +924,12 @@
                                 <div class="detail-value">${order.deviceId}</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">支付金额</div>
+                                <div class="detail-label">金额</div>
                                 <div class="detail-value">¥${order.amount}</div>
                             </div>
                             <div class="detail-item">
-                                <div class="detail-label">下单时间</div>
-                                <div class="detail-value">${order.date}</div>
+                                <div class="detail-label">时间</div>
+                                <div class="detail-value">${order.date.split(' ')[0]}</div>
                             </div>
                         </div>
                     </div>
@@ -897,7 +951,7 @@
         // 打开结算模态框
         function proceedToCheckout() {
             if (cart.length === 0) {
-                alert('请先选择要购买的套餐');
+                showToast('请先选择要购买的套餐');
                 return;
             }
             
@@ -925,7 +979,7 @@
             const email = document.getElementById('checkoutEmail').value.trim();
             
             if (!deviceId || !contact || !email) {
-                alert('请填写完整的订单信息');
+                showToast('请填写完整的订单信息');
                 return;
             }
             
@@ -936,21 +990,20 @@
             
             // 创建订单
             const order = {
-                id: 'ORD' + Date.now(),
+                id: 'ORD' + Date.now().toString().slice(-6),
                 packageName: cart.map(item => item.name).join(', '),
-                packageType: cart[0].type, // 取第一个套餐类型
+                packageType: cart[0].type,
                 deviceId: deviceId,
                 contact: contact,
                 email: email,
                 amount: total,
                 paymentMethod: selectedPayment,
-                date: new Date().toLocaleString('zh-CN'),
-                status: 'completed'
+                date: new Date().toLocaleString('zh-CN')
             };
             
             // 保存订单
             orders.unshift(order);
-            localStorage.setItem('purchase_orders', JSON.stringify(orders));
+            localStorage.setItem('mobile_orders', JSON.stringify(orders));
             
             // 清空购物车
             cart = [];
@@ -960,18 +1013,59 @@
             closeCheckoutModal();
             
             // 显示成功消息
-            alert(`✅ 支付成功！\n\n订单号: ${order.id}\n授权码已发送到您的邮箱: ${email}\n\n请在设备管理页面使用授权码激活设备。`);
+            showToast(`✅ 支付成功！授权码已发送到 ${email}`);
             
             // 刷新页面
             loadCart();
             loadOrders();
             
             // 切换到订单页面
-            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.querySelector('[data-tab="orders"]').classList.add('active');
-            document.getElementById('orders').classList.add('active');
+            switchTab('orders');
         }
+        
+        // 显示Toast提示
+        function showToast(message) {
+            // 移除现有的toast
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 10000;
+                animation: fadeInOut 2s ease-in-out;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translate(-50%, -40%); }
+                20% { opacity: 1; transform: translate(-50%, -50%); }
+                80% { opacity: 1; transform: translate(-50%, -50%); }
+                100% { opacity: 0; transform: translate(-50%, -60%); }
+            }
+        `;
+        document.head.appendChild(style);
         
         // 点击模态框外部关闭
         window.onclick = function(event) {
@@ -980,36 +1074,6 @@
                 closeCheckoutModal();
             }
         }
-        
-        // 模态框样式
-        const style = document.createElement('style');
-        style.textContent = `
-            .modal {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                display: none;
-                justify-content: center;
-                align-items: center;
-                z-index: 1000;
-            }
-            .modal-content {
-                background: white;
-                padding: 30px;
-                border-radius: 15px;
-                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            }
-            .modal-actions {
-                display: flex;
-                gap: 10px;
-                justify-content: flex-end;
-                margin-top: 25px;
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>

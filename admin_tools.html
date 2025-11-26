@@ -325,9 +325,9 @@
     <button id="installBtn" class="install-btn" title="安装APP">📱</button>
 
     <script>
-        // 配置 - 修改为您的GitHub仓库链接
+        // 配置 - 修改为访问本地文件
         const CONFIG = {
-            DEVICES_JSON_URL: 'https://raw.githubusercontent.com/xiaolong-nihao/tv-service-config/main/devices.json',
+            DEVICES_JSON_URL: './devices.json', // 改为本地文件路径
             CACHE_ENABLED: true,
             CACHE_TIME: 5 * 60 * 1000 // 5分钟缓存
         };
@@ -603,7 +603,7 @@
             // 复制到剪贴板
             copyToClipboard(deviceInfo);
             
-            alert(`✅ 设备信息已复制到剪贴板！\n\n请更新GitHub上的devices.json文件，然后点击"刷新列表"。`);
+            alert(`✅ 设备信息已复制到剪贴板！\n\n请更新本地的devices.json文件，然后点击"刷新列表"。`);
             
             hideAddForm();
             // 延迟刷新，给你时间更新文件
@@ -678,5 +678,3 @@
     </script>
 </body>
 </html>
-
-

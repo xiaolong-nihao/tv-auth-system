@@ -107,15 +107,15 @@
         
         .device-type-selector {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
             margin-bottom: 15px;
         }
         
         .device-option {
             border: 2px solid #e1e5e9;
             border-radius: 10px;
-            padding: 15px;
+            padding: 12px 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
@@ -131,13 +131,13 @@
         }
         
         .device-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
+            font-size: 20px;
+            margin-bottom: 5px;
         }
         
         .device-name {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
         }
         
         .help-tip {
@@ -152,8 +152,8 @@
         
         .package-selector {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
         }
         
         .package-option {
@@ -195,24 +195,24 @@
         .package-name {
             font-weight: 600;
             margin-bottom: 5px;
-            font-size: 16px;
+            font-size: 14px;
         }
         
         .package-price {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--primary);
             margin-bottom: 5px;
         }
         
         .package-period {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
         }
         
         .payment-methods {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 15px;
         }
@@ -404,6 +404,36 @@
             80% { opacity: 1; transform: translate(-50%, -50%); }
             100% { opacity: 0; transform: translate(-50%, -60%); }
         }
+        
+        .device-help-details {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .device-help-details h4 {
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .device-help-details ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .device-help-details li {
+            margin-bottom: 5px;
+        }
+        
+        .device-help-details code {
+            background: #e9ecef;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -438,7 +468,7 @@
                         </div>
                         <div class="device-option" onclick="selectDeviceType('box')">
                             <div class="device-icon">🖥️</div>
-                            <div class="device-name">电视盒子</div>
+                            <div class="device-name">盒子</div>
                         </div>
                     </div>
                 </div>
@@ -448,8 +478,10 @@
                     <label for="deviceId">设备ID：</label>
                     <input type="text" id="deviceId" class="form-control" placeholder="请输入设备ID">
                     <div id="deviceHelp" class="help-tip">
-                        <strong>如何获取设备ID：</strong><br>
-                        <span id="helpContent">查看电视机身背面标签或系统设置中的"序列号"</span>
+                        <strong>如何获取设备ID：</strong>
+                        <div id="helpContent" class="device-help-details">
+                            <!-- 设备ID获取说明将通过JavaScript动态加载 -->
+                        </div>
                     </div>
                 </div>
                 
@@ -482,38 +514,11 @@
                         <div class="package-period">30天授权</div>
                     </div>
                     
-                    <div class="package-option" onclick="selectPackage('quarterly')">
-                        <div class="package-name">季卡</div>
-                        <div class="package-price">¥79</div>
-                        <div class="package-period">90天授权</div>
-                    </div>
-                    
                     <div class="package-option popular selected" onclick="selectPackage('yearly')">
                         <div class="popular-badge">热门</div>
                         <div class="package-name">年卡</div>
                         <div class="package-price">¥299</div>
                         <div class="package-period">365天授权</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 支付方式 -->
-            <div class="section">
-                <div class="section-title">
-                    <i>💳</i> 支付方式
-                </div>
-                <div class="payment-methods">
-                    <div class="payment-option selected" onclick="selectPayment('wechat')">
-                        <div class="payment-icon">💚</div>
-                        <div class="payment-name">微信支付</div>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment('alipay')">
-                        <div class="payment-icon">💙</div>
-                        <div class="payment-name">支付宝</div>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment('bank')">
-                        <div class="payment-icon">💳</div>
-                        <div class="payment-name">银行卡</div>
                     </div>
                 </div>
             </div>
@@ -572,8 +577,15 @@
             
             <div class="form-group">
                 <label>支付方式：</label>
-                <div class="form-control" style="background: #f8f9fa;" id="confirmPayment">
-                    微信支付
+                <div class="payment-methods">
+                    <div class="payment-option selected" onclick="selectPayment('wechat')">
+                        <div class="payment-icon">💚</div>
+                        <div class="payment-name">微信支付</div>
+                    </div>
+                    <div class="payment-option" onclick="selectPayment('alipay')">
+                        <div class="payment-icon">💙</div>
+                        <div class="payment-name">支付宝</div>
+                    </div>
                 </div>
             </div>
             
@@ -597,17 +609,49 @@
         
         // 设备类型帮助信息
         const deviceHelpInfo = {
-            'tv': '查看电视机身背面标签或系统设置中的"序列号"',
-            'phone': '在手机拨号界面输入 *#06# 获取IMEI码',
-            'tablet': '在平板设置-关于设备中查看序列号或IMEI',
-            'box': '查看电视盒子机身底部标签的"序列号"'
+            'tv': {
+                title: '电视设备ID获取方法',
+                steps: [
+                    '方法一：查看电视机身背面标签上的"序列号"或"SN"',
+                    '方法二：进入电视系统设置 → 关于本机 → 设备信息',
+                    '方法三：在电视遥控器上按"菜单"键 → 系统信息',
+                    '方法四：部分电视可在工程模式查看，通常按遥控器特定组合键'
+                ]
+            },
+            'phone': {
+                title: '手机设备ID获取方法',
+                steps: [
+                    '方法一：在拨号界面输入 <code>*#06#</code> 获取IMEI码',
+                    '方法二：进入设置 → 关于手机 → 状态信息 → IMEI信息',
+                    '方法三：查看手机包装盒或购买凭证上的IMEI码',
+                    '方法四：部分手机可在SIM卡托盘上找到IMEI码',
+                    '注意：双卡手机通常有两个IMEI，任选一个即可'
+                ]
+            },
+            'tablet': {
+                title: '平板设备ID获取方法',
+                steps: [
+                    '方法一：进入设置 → 关于平板电脑 → 状态 → 序列号',
+                    '方法二：查看平板背面或边框上的序列号标签',
+                    '方法三：在包装盒或购买发票上查找序列号',
+                    '方法四：部分平板支持在拨号界面输入 <code>*#06#</code>'
+                ]
+            },
+            'box': {
+                title: '电视盒子设备ID获取方法',
+                steps: [
+                    '方法一：查看盒子机身底部或背面的"序列号"标签',
+                    '方法二：进入盒子设置 → 关于 → 设备信息',
+                    '方法三：在系统信息或网络设置中查找MAC地址',
+                    '方法四：部分盒子可在工程模式查看设备标识'
+                ]
+            }
         };
         
         // 支付方式显示名称
         const paymentNames = {
             'wechat': '微信支付',
-            'alipay': '支付宝',
-            'bank': '银行卡支付'
+            'alipay': '支付宝'
         };
         
         // 初始化页面
@@ -640,8 +684,15 @@
         function updateDeviceHelp() {
             const helpTip = document.getElementById('deviceHelp');
             const helpContent = document.getElementById('helpContent');
+            const deviceInfo = deviceHelpInfo[selectedDeviceType];
             
-            helpContent.textContent = deviceHelpInfo[selectedDeviceType];
+            let html = `<h4>${deviceInfo.title}</h4><ul>`;
+            deviceInfo.steps.forEach(step => {
+                html += `<li>${step}</li>`;
+            });
+            html += '</ul>';
+            
+            helpContent.innerHTML = html;
             helpTip.style.display = 'block';
         }
         
@@ -687,8 +738,6 @@
             document.getElementById('confirmPackage').textContent = 
                 `${packageInfo.name} - ¥${packageInfo.price}`;
             document.getElementById('confirmDeviceId').textContent = deviceId;
-            document.getElementById('confirmPayment').textContent = 
-                paymentNames[selectedPayment];
             
             // 显示模态框
             document.getElementById('purchaseModal').style.display = 'flex';
@@ -874,7 +923,6 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             const packages = {
                 'trial': { name: '体验卡', price: 0 },
                 'monthly': { name: '月卡', price: 29 },
-                'quarterly': { name: '季卡', price: 79 },
                 'yearly': { name: '年卡', price: 299 }
             };
             
@@ -893,16 +941,16 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
                                 owner: "张三",
                                 contact: "13800138000",
                                 package: "年卡",
-                                activate_date: "2023-10-01",
-                                expire_date: "2024-10-01"
+                                activate_date: "2024-01-01",
+                                expire_date: "2024-12-31"
                             },
                             {
                                 device_id: "0987654321",
                                 owner: "李四",
                                 contact: "wechat123",
                                 package: "月卡",
-                                activate_date: "2023-11-15",
-                                expire_date: "2023-12-15"
+                                activate_date: "2024-01-10",
+                                expire_date: "2024-02-09"
                             }
                         ]
                     });

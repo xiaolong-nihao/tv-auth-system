@@ -168,41 +168,6 @@
             color: #666;
         }
         
-        .payment-methods {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .payment-option {
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            padding: 12px 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .payment-option:hover {
-            border-color: var(--primary);
-        }
-        
-        .payment-option.selected {
-            border-color: var(--primary);
-            background: #f8f9ff;
-        }
-        
-        .payment-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .payment-name {
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
         .btn {
             display: block;
             width: 100%;
@@ -312,36 +277,6 @@
             color: #dc3545;
         }
         
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 20px;
-        }
-        
         .toast {
             position: fixed;
             top: 50%;
@@ -405,13 +340,13 @@
         
         .contact-buttons {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 10px;
             margin-top: 15px;
         }
         
         .contact-btn {
-            padding: 10px;
+            padding: 12px;
             border: none;
             border-radius: 8px;
             font-size: 14px;
@@ -420,24 +355,13 @@
             transition: all 0.3s;
         }
         
-        .contact-btn.wechat {
-            background: #07c160;
-            color: white;
-        }
-        
-        .contact-btn.qq {
-            background: #12b7f5;
-            color: white;
-        }
-        
-        .contact-btn.email {
-            background: #ea4335;
-            color: white;
-        }
-        
         .contact-btn.copy {
             background: var(--primary);
             color: white;
+        }
+        
+        .contact-btn.copy:hover {
+            background: var(--secondary);
         }
     </style>
 </head>
@@ -484,9 +408,7 @@
                     </div>
                 </div>
                 
-                <button class="btn btn-secondary" onclick="checkDeviceStatus()">
-                    查询设备状态
-                </button>
+                <!-- 移除查询设备状态按钮 -->
             </div>
             
             <!-- 套餐选择 -->
@@ -501,14 +423,14 @@
                         <div class="package-period">30天授权</div>
                     </div>
                     
-                    <div class="package-option popular selected" onclick="selectPackage('quarterly')">
-                        <div class="popular-badge">🔥 热门推荐</div>
+                    <div class="package-option" onclick="selectPackage('quarterly')">
                         <div class="package-name">季卡</div>
                         <div class="package-price">¥79</div>
                         <div class="package-period">90天授权</div>
                     </div>
                     
-                    <div class="package-option" onclick="selectPackage('yearly')">
+                    <div class="package-option popular selected" onclick="selectPackage('yearly')">
+                        <div class="popular-badge">🔥 热门推荐</div>
                         <div class="package-name">年卡</div>
                         <div class="package-price">¥299</div>
                         <div class="package-period">365天授权</div>
@@ -521,29 +443,17 @@
                 生成订单信息
             </button>
             
-            <!-- 查询结果 -->
-            <div id="deviceStatusResult" class="result-section">
-                <div class="result-title">设备状态查询结果</div>
-                <div id="statusContent"></div>
-            </div>
-            
             <!-- 订单信息 -->
             <div id="orderResult" class="result-section">
                 <div class="result-title">订单信息</div>
                 <div id="orderContent" class="result-content"></div>
                 <div class="contact-buttons">
-                    <button class="contact-btn wechat" onclick="copyToWechat()">
-                        💬 复制微信信息
-                    </button>
-                    <button class="contact-btn qq" onclick="copyToQQ()">
-                        💙 复制QQ信息
-                    </button>
-                    <button class="contact-btn email" onclick="sendEmail()">
-                        📧 发送邮件
-                    </button>
                     <button class="contact-btn copy" onclick="copyOrderToClipboard()">
-                        📋 复制订单
+                        📋 复制订单信息
                     </button>
+                </div>
+                <div style="margin-top: 15px; font-size: 13px; color: #666; text-align: center;">
+                    请将复制的订单信息发送给客服完成购买
                 </div>
             </div>
             
@@ -562,7 +472,7 @@
 
     <script>
         // 全局变量
-        let selectedPackage = 'quarterly';
+        let selectedPackage = 'yearly'; // 默认选择年卡
         let selectedDeviceType = 'tv';
         let currentOrder = null;
         
@@ -646,68 +556,6 @@
             event.currentTarget.classList.add('selected');
         }
         
-        // 检查设备状态
-        async function checkDeviceStatus() {
-            const deviceId = document.getElementById('deviceId').value.trim();
-            const statusContent = document.getElementById('statusContent');
-            const resultSection = document.getElementById('deviceStatusResult');
-            
-            if (!deviceId) {
-                showToast('请输入设备ID');
-                return;
-            }
-            
-            statusContent.innerHTML = '<div class="loading">🔍 查询中...</div>';
-            resultSection.style.display = 'block';
-            
-            try {
-                // 模拟从服务器获取设备数据
-                const devicesData = await fetchDevicesData();
-                const devices = devicesData.authorized_devices || [];
-                const device = devices.find(d => d.device_id === deviceId);
-                
-                let statusHtml = '';
-                
-                if (device) {
-                    const isExpired = new Date(device.expire_date) < new Date();
-                    const daysRemaining = Math.ceil((new Date(device.expire_date) - new Date()) / (1000 * 60 * 60 * 24));
-                    
-                    statusHtml = `
-                        <div class="device-status ${isExpired ? 'status-expired' : 'status-active'}">
-                            ${isExpired ? '❌ 已过期' : '✅ 授权有效'}
-                        </div>
-                        <div class="result-content">
-设备ID：${device.device_id}
-用户：${device.owner}
-联系方式：${device.contact}
-套餐：${device.package}
-激活日期：${device.activate_date}
-到期日期：${device.expire_date}
-${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
-                        </div>
-                    `;
-                } else {
-                    statusHtml = `
-                        <div class="device-status status-not-found">
-                            ❓ 设备未授权
-                        </div>
-                        <p>该设备尚未获得授权，请购买套餐。</p>
-                    `;
-                }
-                
-                statusContent.innerHTML = statusHtml;
-                
-            } catch (error) {
-                statusContent.innerHTML = `
-                    <div class="error">
-                        ❌ 查询失败: ${error.message}
-                        <br>
-                        <button class="btn btn-secondary" onclick="checkDeviceStatus()">重试</button>
-                    </div>
-                `;
-            }
-        }
-        
         // 生成订单信息
         function generateOrder() {
             const deviceId = document.getElementById('deviceId').value.trim();
@@ -726,7 +574,7 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             // 创建订单
             const packageInfo = getPackageInfo(selectedPackage);
             currentOrder = {
-                id: 'ORD' + Date.now().toString().slice(-6),
+                id: 'ORD' + Date.now().toString().slice(-8),
                 packageName: packageInfo.name,
                 packageType: selectedPackage,
                 deviceId: deviceId,
@@ -764,46 +612,6 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
             resultSection.scrollIntoView({ behavior: 'smooth' });
         }
         
-        // 复制到微信
-        function copyToWechat() {
-            if (!currentOrder) {
-                showToast('请先生成订单信息');
-                return;
-            }
-            
-            const orderText = formatOrderForContact(currentOrder);
-            copyToClipboard(orderText);
-            showToast('✅ 订单信息已复制，请发送给微信客服');
-        }
-        
-        // 复制到QQ
-        function copyToQQ() {
-            copyToWechat(); // 复用相同逻辑
-        }
-        
-        // 发送邮件
-        function sendEmail() {
-            if (!currentOrder) {
-                showToast('请先生成订单信息');
-                return;
-            }
-            
-            const subject = `设备授权购买订单 - ${currentOrder.id}`;
-            const body = `尊敬的管理员：
-
-我想购买设备授权服务，订单信息如下：
-
-${formatOrderForContact(currentOrder)}
-
-请审核订单并告知支付方式，谢谢！
-
-此致
-敬礼`;
-            
-            const mailtoLink = `mailto:service@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoLink;
-        }
-        
         // 复制订单到剪贴板
         function copyOrderToClipboard() {
             if (!currentOrder) {
@@ -811,21 +619,9 @@ ${formatOrderForContact(currentOrder)}
                 return;
             }
             
-            const orderText = formatOrderForContact(currentOrder);
+            const orderText = document.getElementById('orderContent').textContent;
             copyToClipboard(orderText);
-            showToast('✅ 订单信息已复制到剪贴板！');
-        }
-        
-        // 格式化订单信息用于联系
-        function formatOrderForContact(order) {
-            return `设备授权购买订单：
-订单号：${order.id}
-设备类型：${getDeviceTypeName(order.deviceType)}
-设备ID：${order.deviceId}
-联系方式：${order.contact}
-选择套餐：${order.packageName}
-订单金额：¥${order.amount}
-下单时间：${order.date}`;
+            showToast('✅ 订单信息已复制到剪贴板！\n请发送给客服完成购买');
         }
         
         // 获取设备类型名称
@@ -880,36 +676,7 @@ ${formatOrderForContact(currentOrder)}
                 'yearly': { name: '年卡', price: 299 }
             };
             
-            return packages[packageType] || packages['quarterly'];
-        }
-        
-        // 模拟获取设备数据
-        async function fetchDevicesData() {
-            // 模拟网络请求延迟
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve({
-                        authorized_devices: [
-                            {
-                                device_id: "1234567890",
-                                owner: "张三",
-                                contact: "13800138000",
-                                package: "季卡",
-                                activate_date: "2024-01-01",
-                                expire_date: "2024-04-01"
-                            },
-                            {
-                                device_id: "0987654321",
-                                owner: "李四",
-                                contact: "wechat123",
-                                package: "月卡",
-                                activate_date: "2024-01-10",
-                                expire_date: "2024-02-09"
-                            }
-                        ]
-                    });
-                }, 800);
-            });
+            return packages[packageType] || packages['yearly'];
         }
         
         // 显示Toast提示
@@ -928,7 +695,7 @@ ${formatOrderForContact(currentOrder)}
             
             setTimeout(() => {
                 toast.remove();
-            }, 2000);
+            }, 3000);
         }
     </script>
 </body>

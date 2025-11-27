@@ -3,130 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>设备授权管理系统 - 外链网盘版</title>
+    <title>管理员授权系统</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #1e40af;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #1f2937;
-            --light: #f8fafc;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            max-width: 1000px;
-            margin: 0 auto;
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .main-content {
-            padding: 30px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 1px solid #f1f5f9;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-        }
-        
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 5px;
-        }
-        
-        .btn-block {
+        /* 样式同上，省略重复部分 */
+        .search-box {
             display: flex;
-            width: 100%;
+            gap: 10px;
+            margin: 20px 0;
         }
         
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-            margin: 2px;
-        }
-        
-        .status-authorized {
-            background: #dcfce7;
-            color: #166534;
-        }
-        
-        .status-pending {
-            background: #fef3c7;
-            color: #d97706;
+        .device-list {
+            max-height: 400px;
+            overflow-y: auto;
         }
         
         .device-item {
@@ -135,640 +23,287 @@
             border-radius: 10px;
             padding: 15px;
             margin: 10px 0;
-        }
-        
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--dark);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            z-index: 10000;
-        }
-        
-        .grid {
-            display: grid;
-            gap: 20px;
-            margin: 20px 0;
-        }
-        
-        .grid-2 {
-            grid-template-columns: 1fr 1fr;
-        }
-        
-        .grid-3 {
-            grid-template-columns: 1fr 1fr 1fr;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @media (max-width: 768px) {
-            .grid-2, .grid-3 {
-                grid-template-columns: 1fr;
-            }
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
 </head>
 <body>
-    <!-- 外链配置页面 -->
-    <div id="configPage" class="container">
+    <div class="container">
         <div class="header">
-            <h1>🔗 外链网盘配置</h1>
-            <p>配置您的 authorized_devices.json 文件外链</p>
+            <h1>⚙️ 管理员授权系统</h1>
+            <p>设备授权管理后台</p>
         </div>
         
         <div class="main-content">
+            <!-- 设备搜索 -->
             <div class="card">
-                <h3>快速配置</h3>
-                <p style="margin: 15px 0; color: #64748b;">
-                    检测到您已有外链地址，点击下方按钮快速配置
-                </p>
-                <button class="btn btn-success btn-block" onclick="quickSetup()">
-                    🚀 快速配置: https://13035.kstore.space/卡密/authorized_devices.json
-                </button>
+                <h3>设备搜索</h3>
+                <div class="search-box">
+                    <input type="text" id="searchFingerprint" class="form-control" 
+                           placeholder="输入设备指纹进行搜索...">
+                    <button class="btn btn-primary" onclick="searchDevice()">搜索</button>
+                </div>
             </div>
-            
+
+            <!-- 设备授权管理 -->
             <div class="card">
-                <h3>手动配置</h3>
-                <p style="margin: 15px 0; color: #64748b;">
-                    或者手动修改外链地址
-                </p>
-                
+                <h3>设备授权管理</h3>
+                <div class="device-list" id="deviceList">
+                    <!-- 设备列表 -->
+                </div>
+            </div>
+
+            <!-- 手动添加设备 -->
+            <div class="card">
+                <h3>手动添加/编辑设备</h3>
                 <div class="form-group">
-                    <label>authorized_devices.json 外链地址:</label>
-                    <input type="url" id="fileUrl" class="form-control" 
-                           value="https://13035.kstore.space/卡密/authorized_devices.json"
-                           placeholder="https://您的域名/authorized_devices.json">
+                    <label>设备指纹：</label>
+                    <input type="text" id="editFingerprint" class="form-control" 
+                           placeholder="输入设备指纹">
                 </div>
-                
                 <div class="form-group">
-                    <label>访问密码 (可选):</label>
-                    <input type="password" id="accessPassword" class="form-control" 
-                           placeholder="如果外链需要密码访问">
+                    <label>设备名称：</label>
+                    <input type="text" id="editDeviceName" class="form-control" 
+                           placeholder="输入设备描述">
                 </div>
-                
-                <button class="btn btn-primary btn-block" onclick="saveConfig()">
-                    💾 保存配置
-                </button>
-            </div>
-            
-            <div class="card">
-                <h3>当前配置状态</h3>
-                <div id="configStatus">
-                    <p>等待配置...</p>
+                <div class="form-group">
+                    <label>授权天数：</label>
+                    <input type="number" id="editAuthDays" class="form-control" 
+                           value="30" min="1" max="3650">
                 </div>
-            </div>
-
-            <div class="card">
-                <h3>首次使用说明</h3>
-                <div style="color: #64748b; line-height: 1.6;">
-                    <p><strong>步骤 1:</strong> 点击"快速配置"按钮</p>
-                    <p><strong>步骤 2:</strong> 系统会尝试从您的外链加载数据</p>
-                    <p><strong>步骤 3:</strong> 如果文件不存在，系统会引导您创建初始文件</p>
-                    <p><strong>步骤 4:</strong> 将生成的文件上传到您的 kstore.space 网盘</p>
+                <div class="form-group">
+                    <label>到期时间：</label>
+                    <input type="date" id="editExpireDate" class="form-control">
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 主管理系统 -->
-    <div id="mainPage" class="container" style="display: none;">
-        <div class="header">
-            <h1>📱 设备授权管理系统</h1>
-            <p>基于外链网盘的数据存储 | <span id="deviceCount">0 个设备</span></p>
-        </div>
-        
-        <div class="main-content">
-            <!-- 控制面板 -->
-            <div class="grid grid-3">
-                <div class="card">
-                    <h4>总设备数</h4>
-                    <h2 id="totalDevices">0</h2>
-                </div>
-                <div class="card">
-                    <h4>当前设备状态</h4>
-                    <div id="currentDeviceStatus" class="status-badge status-pending">
-                        未验证
-                    </div>
-                </div>
-                <div class="card">
-                    <h4>最后同步</h4>
-                    <div id="lastSync">从未同步</div>
-                </div>
-            </div>
-            
-            <!-- 设备管理 -->
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3>设备管理</h3>
-                    <div>
-                        <button class="btn btn-primary" onclick="syncData()">
-                            🔄 同步数据
-                        </button>
-                        <button class="btn btn-success" onclick="showAddDeviceModal()">
-                            ➕ 添加设备
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="devicesList">
-                    <!-- 设备列表将在这里显示 -->
-                </div>
+                <button class="btn btn-success" onclick="saveDevice()">保存设备授权</button>
             </div>
 
-            <!-- 当前设备信息 -->
+            <!-- 数据管理 -->
             <div class="card">
-                <h3 style="margin-bottom: 15px;">当前设备信息</h3>
-                <div class="device-item">
-                    <strong>设备指纹:</strong>
-                    <div style="font-family: monospace; font-size: 12px; color: #64748b; margin: 5px 0; word-break: break-all;">
-                        <span id="currentFingerprintDisplay">生成中...</span>
-                    </div>
-                    <div style="font-size: 12px; color: #64748b;">
-                        复制此指纹用于添加新设备
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 系统管理 -->
-            <div class="card">
-                <h3 style="margin-bottom: 15px;">系统管理</h3>
-                <button class="btn btn-primary" onclick="exportData()">
-                    💾 导出数据文件
-                </button>
-                <button class="btn btn-danger" onclick="resetSystem()">
-                    🗑️ 重置系统
-                </button>
-                <button class="btn" onclick="showConfigPage()" style="background: #e2e8f0;">
-                    ⚙️ 重新配置
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 添加设备模态框 -->
-    <div id="addDeviceModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
-        <div style="background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px;">
-            <h3 style="margin-bottom: 20px;">添加授权设备</h3>
-            <div class="form-group">
-                <label>设备指纹:</label>
-                <input type="text" id="newDeviceFingerprint" class="form-control" placeholder="输入设备指纹">
-            </div>
-            <div class="form-group">
-                <label>设备名称:</label>
-                <input type="text" id="newDeviceName" class="form-control" placeholder="输入设备描述">
-            </div>
-            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                <button class="btn" onclick="closeAddDeviceModal()" style="background: #e2e8f0;">取消</button>
-                <button class="btn btn-primary" onclick="addDevice()">添加设备</button>
+                <h3>数据管理</h3>
+                <button class="btn btn-primary" onclick="exportData()">导出授权数据</button>
+                <button class="btn" onclick="importData()" style="background: #e2e8f0;">导入数据</button>
+                <button class="btn btn-danger" onclick="clearExpired()">清理过期设备</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 系统配置
-        let systemConfig = {
-            fileUrl: '',
-            accessPassword: '',
-            data: null
-        };
-
-        // 当前设备信息
-        let currentDevice = {
-            fingerprint: null,
-            isAuthorized: false
-        };
+        // 设备数据
+        let devices = [];
 
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            initializeSystem();
+            loadDevices();
         });
 
-        // 初始化系统
-        async function initializeSystem() {
-            await generateDeviceFingerprint();
-            loadConfig();
-        }
-
-        // 生成设备指纹
-        async function generateDeviceFingerprint() {
-            try {
-                const components = [
-                    navigator.userAgent,
-                    navigator.platform,
-                    navigator.language,
-                    screen.width + 'x' + screen.height,
-                    new Date().getTimezoneOffset().toString(),
-                    navigator.hardwareConcurrency || 'unknown'
-                ];
-                
-                const fingerprintString = components.join('|');
-                const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(fingerprintString));
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                currentDevice.fingerprint = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                
-                if (document.getElementById('currentFingerprintDisplay')) {
-                    document.getElementById('currentFingerprintDisplay').textContent = currentDevice.fingerprint;
-                }
-            } catch (error) {
-                console.error('生成设备指纹失败:', error);
-                currentDevice.fingerprint = 'fingerprint_error_' + Date.now();
+        // 加载设备数据
+        function loadDevices() {
+            const saved = localStorage.getItem('authorizedDevices');
+            if (saved) {
+                devices = JSON.parse(saved);
+                updateDeviceList();
             }
         }
 
-        // 快速配置
-        function quickSetup() {
-            systemConfig.fileUrl = 'https://13035.kstore.space/卡密/authorized_devices.json';
-            document.getElementById('fileUrl').value = systemConfig.fileUrl;
-            saveConfig();
+        // 保存设备数据
+        function saveDevices() {
+            localStorage.setItem('authorizedDevices', JSON.stringify(devices));
         }
 
-        // 加载配置
-        function loadConfig() {
-            const savedConfig = localStorage.getItem('systemConfig');
-            if (savedConfig) {
-                systemConfig = JSON.parse(savedConfig);
-                document.getElementById('fileUrl').value = systemConfig.fileUrl;
-                document.getElementById('accessPassword').value = systemConfig.accessPassword;
-                updateConfigStatus();
-                
-                if (systemConfig.fileUrl) {
-                    // 自动加载数据
-                    setTimeout(() => {
-                        loadData();
-                    }, 1000);
-                }
-            }
-        }
-
-        // 保存配置
-        async function saveConfig() {
-            const fileUrl = document.getElementById('fileUrl').value.trim();
-            const accessPassword = document.getElementById('accessPassword').value.trim();
-            
-            if (!fileUrl) {
-                alert('请输入外链地址');
+        // 搜索设备
+        function searchDevice() {
+            const searchTerm = document.getElementById('searchFingerprint').value.trim();
+            if (!searchTerm) {
+                updateDeviceList();
                 return;
             }
-            
-            systemConfig.fileUrl = fileUrl;
-            systemConfig.accessPassword = accessPassword;
-            
-            localStorage.setItem('systemConfig', JSON.stringify(systemConfig));
-            updateConfigStatus();
-            showToast('配置保存成功');
-            
-            // 尝试加载数据
-            await loadData();
-        }
 
-        // 更新配置状态
-        function updateConfigStatus() {
-            const statusDiv = document.getElementById('configStatus');
-            if (systemConfig.fileUrl) {
-                statusDiv.innerHTML = `
-                    <div style="color: var(--success);">
-                        ✅ 外链配置完成
-                        <div style="font-size: 12px; color: #64748b; margin-top: 5px;">
-                            地址: ${systemConfig.fileUrl}
-                        </div>
-                        <div style="margin-top: 10px;">
-                            <button class="btn btn-primary" onclick="testConnection()" style="padding: 8px 16px; font-size: 12px;">
-                                测试连接
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        // 测试连接
-        async function testConnection() {
-            try {
-                showToast('测试连接中...');
-                const response = await fetch(systemConfig.fileUrl + '?t=' + Date.now());
-                if (response.ok) {
-                    showToast('✅ 连接成功！');
-                } else {
-                    showToast('❌ 连接失败: ' + response.status);
-                }
-            } catch (error) {
-                showToast('❌ 连接失败: ' + error.message);
-            }
-        }
-
-        // 加载数据
-        async function loadData() {
-            try {
-                showToast('正在从外链加载数据...');
-                
-                const response = await fetch(systemConfig.fileUrl + '?t=' + Date.now());
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        // 文件不存在，创建初始数据
-                        await createInitialData();
-                        return;
-                    }
-                    throw new Error('网络请求失败: ' + response.status);
-                }
-                
-                const data = await response.json();
-                systemConfig.data = data;
-                
-                // 检查当前设备授权状态
-                checkDeviceAuthorization();
-                
-                // 显示主页面
-                showMainPage();
-                updateInterface();
-                
-                showToast('数据加载成功');
-            } catch (error) {
-                console.error('加载数据失败:', error);
-                if (error.message.includes('404')) {
-                    await createInitialData();
-                } else {
-                    showToast('加载数据失败: ' + error.message);
-                }
-            }
-        }
-
-        // 创建初始数据
-        async function createInitialData() {
-            showToast('检测到首次使用，创建初始数据...');
-            
-            systemConfig.data = {
-                "system_info": {
-                    "name": "设备授权管理系统",
-                    "version": "1.0.0",
-                    "created_at": new Date().toISOString(),
-                    "last_updated": new Date().toISOString()
-                },
-                "security_config": {
-                    "admin_password_hash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
-                    "max_devices": 10,
-                    "auto_cleanup": true
-                },
-                "authorized_devices": [
-                    {
-                        "device_id": "admin_device_" + Date.now(),
-                        "fingerprint": currentDevice.fingerprint,
-                        "device_name": "管理员设备",
-                        "authorized_at": new Date().toISOString(),
-                        "last_login": new Date().toISOString(),
-                        "permissions": ["admin", "read", "write", "delete"],
-                        "status": "active",
-                        "is_current": true
-                    }
-                ],
-                "pending_requests": [],
-                "backup_info": {
-                    "last_backup": new Date().toISOString(),
-                    "backup_count": 1
-                }
-            };
-            
-            // 下载初始文件让用户上传
-            await exportData();
-            
-            // 显示主页面
-            checkDeviceAuthorization();
-            showMainPage();
-            updateInterface();
-            
-            showToast('初始数据已创建，请下载文件并上传到您的网盘');
-        }
-
-        // 检查设备授权
-        function checkDeviceAuthorization() {
-            if (!systemConfig.data || !currentDevice.fingerprint) return;
-            
-            const authorized = systemConfig.data.authorized_devices.some(
-                device => device.fingerprint === currentDevice.fingerprint
+            const filteredDevices = devices.filter(device => 
+                device.fingerprint.includes(searchTerm) || 
+                device.name.includes(searchTerm)
             );
             
-            currentDevice.isAuthorized = authorized;
-        }
-
-        // 显示主页面
-        function showMainPage() {
-            document.getElementById('configPage').style.display = 'none';
-            document.getElementById('mainPage').style.display = 'block';
-        }
-
-        // 显示配置页面
-        function showConfigPage() {
-            document.getElementById('configPage').style.display = 'block';
-            document.getElementById('mainPage').style.display = 'none';
-        }
-
-        // 更新界面
-        function updateInterface() {
-            if (!systemConfig.data) return;
-            
-            const devices = systemConfig.data.authorized_devices;
-            
-            // 更新计数
-            document.getElementById('totalDevices').textContent = devices.length;
-            document.getElementById('deviceCount').textContent = devices.length + ' 个设备';
-            
-            // 更新设备状态
-            const statusElement = document.getElementById('currentDeviceStatus');
-            if (currentDevice.isAuthorized) {
-                statusElement.textContent = '已授权';
-                statusElement.className = 'status-badge status-authorized';
-            } else {
-                statusElement.textContent = '未授权';
-                statusElement.style.background = '#fef2f2';
-                statusElement.style.color = '#dc2626';
-            }
-            
-            // 更新最后同步时间
-            document.getElementById('lastSync').textContent = new Date().toLocaleString();
-            
-            // 更新设备列表
-            updateDevicesList();
-            
-            // 更新当前设备指纹显示
-            if (document.getElementById('currentFingerprintDisplay')) {
-                document.getElementById('currentFingerprintDisplay').textContent = currentDevice.fingerprint;
-            }
+            updateDeviceList(filteredDevices);
         }
 
         // 更新设备列表
-        function updateDevicesList() {
-            const devicesList = document.getElementById('devicesList');
-            const devices = systemConfig.data.authorized_devices;
-            
-            devicesList.innerHTML = '';
-            
-            if (devices.length === 0) {
-                devicesList.innerHTML = '<p style="color: #64748b; text-align: center;">暂无授权设备</p>';
+        function updateDeviceList(deviceList = devices) {
+            const deviceListDiv = document.getElementById('deviceList');
+            deviceListDiv.innerHTML = '';
+
+            if (deviceList.length === 0) {
+                deviceListDiv.innerHTML = '<p style="color: #64748b; text-align: center;">暂无设备</p>';
                 return;
             }
-            
-            devices.forEach(device => {
-                const isCurrent = device.fingerprint === currentDevice.fingerprint;
+
+            deviceList.forEach(device => {
+                const isExpired = new Date(device.expire_date) < new Date();
                 const deviceElement = document.createElement('div');
                 deviceElement.className = 'device-item';
                 deviceElement.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: start;">
-                        <div style="flex: 1;">
-                            <strong>${device.device_name}</strong>
-                            ${isCurrent ? '<span class="status-badge status-authorized">当前设备</span>' : ''}
-                            <div style="font-size: 12px; color: #64748b; margin-top: 5px;">
-                                指纹: ${device.fingerprint.substring(0, 16)}...
-                            </div>
-                            <div style="font-size: 12px; color: #64748b;">
-                                授权时间: ${new Date(device.authorized_at).toLocaleDateString()}
-                            </div>
+                    <div style="flex: 1;">
+                        <strong>${device.name}</strong>
+                        <div style="font-size: 12px; color: #64748b;">
+                            指纹: ${device.fingerprint.substring(0, 16)}...
                         </div>
-                        <div>
-                            ${!isCurrent ? `
-                                <button class="btn btn-danger" onclick="removeDevice('${device.fingerprint}')" style="padding: 6px 12px; font-size: 12px;">
-                                    移除
-                                </button>
-                            ` : ''}
+                        <div style="font-size: 12px; color: ${isExpired ? '#ef4444' : '#64748b'};">
+                            到期: ${device.expire_date} ${isExpired ? ' (已过期)' : ''}
                         </div>
                     </div>
+                    <div>
+                        <button class="btn" onclick="editDevice('${device.fingerprint}')" 
+                                style="background: var(--warning); color: white; padding: 6px 12px; font-size: 12px;">
+                            编辑
+                        </button>
+                        <button class="btn" onclick="extendDevice('${device.fingerprint}')" 
+                                style="background: var(--success); color: white; padding: 6px 12px; font-size: 12px; margin-left: 5px;">
+                            续期
+                        </button>
+                        <button class="btn" onclick="deleteDevice('${device.fingerprint}')" 
+                                style="background: var(--danger); color: white; padding: 6px 12px; font-size: 12px; margin-left: 5px;">
+                            删除
+                        </button>
+                    </div>
                 `;
-                devicesList.appendChild(deviceElement);
+                deviceListDiv.appendChild(deviceElement);
             });
         }
 
-        // 同步数据
-        function syncData() {
-            loadData();
+        // 编辑设备
+        function editDevice(fingerprint) {
+            const device = devices.find(d => d.fingerprint === fingerprint);
+            if (device) {
+                document.getElementById('editFingerprint').value = device.fingerprint;
+                document.getElementById('editDeviceName').value = device.name;
+                document.getElementById('editAuthDays').value = device.days || 30;
+                document.getElementById('editExpireDate').value = device.expire_date;
+            }
         }
 
-        // 显示添加设备模态框
-        function showAddDeviceModal() {
-            // 自动填充当前设备指纹
-            document.getElementById('newDeviceFingerprint').value = currentDevice.fingerprint;
-            document.getElementById('newDeviceName').value = '新设备';
-            document.getElementById('addDeviceModal').style.display = 'flex';
+        // 续期设备
+        function extendDevice(fingerprint) {
+            const device = devices.find(d => d.fingerprint === fingerprint);
+            if (device) {
+                const extendDays = prompt(`请输入为设备 "${device.name}" 延长的天数:`, "30");
+                if (extendDays && !isNaN(extendDays)) {
+                    const days = parseInt(extendDays);
+                    const currentExpireDate = new Date(device.expire_date);
+                    currentExpireDate.setDate(currentExpireDate.getDate() + days);
+                    
+                    device.expire_date = currentExpireDate.toISOString().split('T')[0];
+                    device.days = (device.days || 0) + days;
+                    
+                    saveDevices();
+                    updateDeviceList();
+                    alert(`设备已成功延长 ${days} 天`);
+                }
+            }
         }
 
-        // 关闭添加设备模态框
-        function closeAddDeviceModal() {
-            document.getElementById('addDeviceModal').style.display = 'none';
-        }
+        // 保存设备
+        function saveDevice() {
+            const fingerprint = document.getElementById('editFingerprint').value.trim();
+            const name = document.getElementById('editDeviceName').value.trim();
+            const days = parseInt(document.getElementById('editAuthDays').value) || 30;
+            const expireDate = document.getElementById('editExpireDate').value;
 
-        // 添加设备
-        function addDevice() {
-            const fingerprint = document.getElementById('newDeviceFingerprint').value.trim();
-            const name = document.getElementById('newDeviceName').value.trim();
-            
             if (!fingerprint) {
                 alert('请输入设备指纹');
                 return;
             }
-            
+
             if (!name) {
                 alert('请输入设备名称');
                 return;
             }
-            
-            // 检查是否已存在
-            const exists = systemConfig.data.authorized_devices.some(
-                device => device.fingerprint === fingerprint
-            );
-            
-            if (exists) {
-                alert('该设备已存在');
-                return;
+
+            // 计算到期日期
+            let finalExpireDate = expireDate;
+            if (!finalExpireDate) {
+                const today = new Date();
+                today.setDate(today.getDate() + days);
+                finalExpireDate = today.toISOString().split('T')[0];
             }
+
+            // 查找是否已存在
+            const existingIndex = devices.findIndex(d => d.fingerprint === fingerprint);
             
-            // 添加新设备
-            systemConfig.data.authorized_devices.push({
-                device_id: 'device_' + Date.now(),
-                fingerprint: fingerprint,
-                device_name: name,
-                authorized_at: new Date().toISOString(),
-                last_login: new Date().toISOString(),
-                permissions: ['read', 'write'],
-                status: 'active',
-                is_current: false
-            });
+            if (existingIndex !== -1) {
+                // 更新现有设备
+                devices[existingIndex] = {
+                    ...devices[existingIndex],
+                    name: name,
+                    days: days,
+                    expire_date: finalExpireDate,
+                    last_updated: new Date().toISOString()
+                };
+            } else {
+                // 添加新设备
+                devices.push({
+                    fingerprint: fingerprint,
+                    name: name,
+                    days: days,
+                    expire_date: finalExpireDate,
+                    authorized_at: new Date().toISOString(),
+                    last_updated: new Date().toISOString(),
+                    status: 'active'
+                });
+            }
+
+            saveDevices();
+            updateDeviceList();
             
-            systemConfig.data.system_info.last_updated = new Date().toISOString();
+            // 清空表单
+            document.getElementById('editFingerprint').value = '';
+            document.getElementById('editDeviceName').value = '';
+            document.getElementById('editAuthDays').value = '30';
+            document.getElementById('editExpireDate').value = '';
             
-            // 保存数据
-            exportData();
-            closeAddDeviceModal();
-            updateInterface();
-            showToast('设备添加成功，请下载新文件并上传到网盘');
+            alert('设备授权保存成功');
         }
 
-        // 移除设备
-        function removeDevice(fingerprint) {
-            if (!confirm('确定要移除此设备吗？')) return;
-            
-            systemConfig.data.authorized_devices = systemConfig.data.authorized_devices.filter(
-                device => device.fingerprint !== fingerprint
-            );
-            
-            systemConfig.data.system_info.last_updated = new Date().toISOString();
-            exportData();
-            updateInterface();
-            showToast('设备已移除，请下载新文件并上传到网盘');
+        // 删除设备
+        function deleteDevice(fingerprint) {
+            if (confirm('确定要删除此设备授权吗？')) {
+                devices = devices.filter(d => d.fingerprint !== fingerprint);
+                saveDevices();
+                updateDeviceList();
+                alert('设备已删除');
+            }
         }
 
         // 导出数据
         function exportData() {
-            const dataStr = JSON.stringify(systemConfig.data, null, 2);
+            const dataStr = JSON.stringify(devices, null, 2);
             const dataBlob = new Blob([dataStr], {type: 'application/json'});
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'authorized_devices.json';
+            link.download = `authorized_devices_${new Date().toISOString().split('T')[0]}.json`;
             link.click();
-            
-            showToast('数据文件已生成，请下载后上传到您的网盘替换旧文件');
         }
 
-        // 重置系统
-        function resetSystem() {
-            if (confirm('确定要重置系统吗？这将清除所有本地配置')) {
-                localStorage.clear();
-                location.reload();
+        // 清理过期设备
+        function clearExpired() {
+            const expiredCount = devices.filter(device => 
+                new Date(device.expire_date) < new Date()
+            ).length;
+            
+            if (expiredCount === 0) {
+                alert('没有找到过期设备');
+                return;
             }
-        }
-
-        // 显示Toast提示
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
             
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.remove();
-                }
-            }, 4000);
-        }
-
-        // 点击模态框外部关闭
-        window.onclick = function(event) {
-            const modal = document.getElementById('addDeviceModal');
-            if (event.target === modal) {
-                closeAddDeviceModal();
+            if (confirm(`确定要清理 ${expiredCount} 个过期设备吗？`)) {
+                devices = devices.filter(device => 
+                    new Date(device.expire_date) >= new Date()
+                );
+                saveDevices();
+                updateDeviceList();
+                alert(`已清理 ${expiredCount} 个过期设备`);
             }
         }
     </script>

@@ -432,7 +432,7 @@
                 <!-- 联系方式 -->
                 <div class="form-group">
                     <label for="contact">联系方式：</label>
-                    <input type="text" id="contact" class="form-control" placeholder="手机号或微信号">
+                    <input type="text" id="contact" class="form-control" placeholder="微信号或QQ号">
                 </div>
                 
                 <!-- 设备ID输入 -->
@@ -465,13 +465,14 @@
                     </div>
                     
                     <div class="package-option popular selected" onclick="selectPackage('quarterly')">
-                        <div class="popular-badge">🔥 热门推荐</div>
+                        
                         <div class="package-name">季卡</div>
                         <div class="package-price">¥79</div>
                         <div class="package-period">90天授权</div>
                     </div>
                     
                     <div class="package-option" onclick="selectPackage('yearly')">
+                        <div class="popular-badge">🔥 热门推荐</div>
                         <div class="package-name">年卡</div>
                         <div class="package-price">¥299</div>
                         <div class="package-period">365天授权</div>
@@ -935,3 +936,4 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
     </script>
 </body>
 </html>
+

@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>设备管理大师 - 管理后台</title>
+    <title>设备管理后台</title>
     <style>
         :root {
             --primary: #4361ee;
-            --secondary: #3f37c9;
+            --secondary: #3a0ca3;
             --success: #4cc9f0;
             --danger: #f72585;
             --warning: #f8961e;
-            --info: #4895ef;
             --light: #f8f9fa;
             --dark: #212529;
         }
@@ -20,92 +19,138 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
         
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 10px;
-            font-size: 14px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
-        .admin-container {
-            max-width: 100%;
-            margin: 0 auto;
+        .container {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
             overflow: hidden;
         }
         
-        .admin-header {
+        .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 20px 15px;
+            padding: 20px;
             text-align: center;
         }
         
-        .admin-header h1 {
+        .header h1 {
             font-size: 22px;
-            font-weight: 700;
             margin-bottom: 5px;
         }
         
-        .admin-header p {
-            font-size: 13px;
+        .header p {
+            font-size: 14px;
             opacity: 0.9;
         }
         
-        .user-info {
-            margin-top: 10px;
-            font-size: 13px;
+        .main-content {
+            padding: 20px;
         }
         
-        .admin-nav {
-            background: var(--dark);
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        .section {
+            margin-bottom: 25px;
         }
         
-        .nav-tabs {
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
             display: flex;
-            list-style: none;
-            min-width: max-content;
+            align-items: center;
         }
         
-        .nav-tab {
-            padding: 15px 20px;
-            color: white;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            white-space: nowrap;
-            font-size: 14px;
+        .section-title i {
+            margin-right: 8px;
+            font-size: 18px;
         }
         
-        .nav-tab.active {
-            border-bottom-color: var(--success);
-            background: rgba(255,255,255,0.1);
+        .form-group {
+            margin-bottom: 16px;
         }
         
-        .admin-content {
-            padding: 20px 15px;
-            min-height: 500px;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
+        label {
             display: block;
-            animation: fadeIn 0.5s;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #444;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .action-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         
         .stats-grid {
@@ -124,7 +169,7 @@
             border-left: 4px solid var(--primary);
         }
         
-        .stat-card.total { border-left-color: var(--info); }
+        .stat-card.total { border-left-color: var(--primary); }
         .stat-card.active { border-left-color: var(--success); }
         .stat-card.expired { border-left-color: var(--danger); }
         .stat-card.warning { border-left-color: var(--warning); }
@@ -138,52 +183,6 @@
         .stat-label {
             color: #666;
             font-size: 12px;
-        }
-        
-        .action-bar {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .btn {
-            padding: 12px 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
         
         .device-table {
@@ -303,32 +302,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
         
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 14px;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-        
         .modal-actions {
             display: flex;
             gap: 10px;
@@ -348,95 +321,16 @@
             font-size: 14px;
         }
         
-        .settings-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-        
-        .setting-card {
-            background: white;
+        .login-form {
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .setting-card h3 {
-            margin-bottom: 15px;
-            color: var(--primary);
-            font-size: 16px;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
-        }
-        
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 28px;
-        }
-        
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .toggle-slider {
-            background-color: var(--primary);
-        }
-        
-        input:checked + .toggle-slider:before {
-            transform: translateX(22px);
-        }
-        
-        .toggle-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-        
-        .user-card {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            margin-bottom: 12px;
         }
         
         .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .user-details {
-            flex: 1;
+            background: #e7f3ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
         }
         
         .user-name {
@@ -447,125 +341,125 @@
         
         .user-role {
             color: #666;
-            font-size: 13px;
+            font-size: 14px;
         }
         
-        .user-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .stat {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-weight: bold;
-            font-size: 16px;
-        }
-        
-        .stat-label {
-            font-size: 11px;
-            color: #666;
-        }
-        
-        .chart-placeholder {
-            height: 150px;
-            background: #f8f9fa;
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 20px;
             border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #666;
-            font-size: 13px;
-            margin-top: 15px;
+            font-size: 14px;
+            z-index: 10000;
+            animation: fadeInOut 2s ease-in-out;
         }
         
-        /* 响应式调整 */
-        @media (min-width: 768px) {
-            body {
-                padding: 20px;
-                font-size: 16px;
-            }
-            
-            .admin-container {
-                max-width: 1200px;
-            }
-            
-            .admin-header {
-                padding: 25px 30px;
-            }
-            
-            .admin-header h1 {
-                font-size: 28px;
-            }
-            
-            .admin-nav {
-                padding: 0 30px;
-            }
-            
-            .admin-content {
-                padding: 30px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 20px;
-            }
-            
-            .action-bar {
-                flex-direction: row;
-                align-items: center;
-            }
-            
-            .search-box {
-                max-width: 300px;
-            }
-            
-            .settings-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .user-info {
-                flex-direction: row;
-                align-items: center;
-            }
-            
-            .table-header, .table-row {
-                grid-template-columns: 1fr 3fr 2fr 1fr 1fr;
-            }
-            
-            .device-details {
-                display: none;
-            }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -40%); }
+            20% { opacity: 1; transform: translate(-50%, -50%); }
+            80% { opacity: 1; transform: translate(-50%, -50%); }
+            100% { opacity: 0; transform: translate(-50%, -60%); }
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            background: var(--dark);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .nav-tab.active {
+            background: var(--primary);
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <header class="admin-header">
-            <div>
-                <h1>📱 设备管理大师</h1>
-                <p>专业设备授权管理系统 - 管理后台</p>
+    <!-- 登录界面 -->
+    <div id="loginPage" class="container">
+        <div class="header">
+            <h1>🔐 设备管理后台</h1>
+            <p>管理员登录</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="login-form">
+                <div class="form-group">
+                    <label>管理员账号：</label>
+                    <input type="text" id="adminUsername" class="form-control" placeholder="请输入管理员账号">
+                </div>
+                
+                <div class="form-group">
+                    <label>密码：</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="请输入密码">
+                </div>
+                
+                <button class="btn btn-primary" onclick="login()">
+                    登录系统
+                </button>
+                
+                <div style="margin-top: 20px; text-align: center; color: #666; font-size: 14px;">
+                    <p>默认管理员账号：admin</p>
+                    <p>默认密码：123456</p>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- 主管理界面 -->
+    <div id="adminPage" class="container" style="display: none;">
+        <div class="header">
+            <h1>📱 设备管理后台</h1>
+            <p>专业设备授权管理系统</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- 用户信息 -->
             <div class="user-info">
-                <div>管理员</div>
-                <div style="font-weight: 600;" id="currentUser">Admin User</div>
+                <div class="user-name" id="currentUserName">管理员</div>
+                <div class="user-role" id="currentUserRole">系统管理员</div>
+                <button class="btn btn-secondary" onclick="logout()" style="margin-top: 10px; padding: 8px 15px; font-size: 14px;">
+                    退出登录
+                </button>
             </div>
-        </header>
-        
-        <nav class="admin-nav">
+            
+            <!-- 导航标签 -->
             <ul class="nav-tabs">
-                <li class="nav-tab active" data-tab="dashboard">📊 数据看板</li>
-                <li class="nav-tab" data-tab="devices">📋 设备管理</li>
-                <li class="nav-tab" data-tab="users">👥 用户管理</li>
-                <li class="nav-tab" data-tab="settings">⚙️ 系统设置</li>
+                <li class="nav-tab active" data-tab="dashboard">📊 数据</li>
+                <li class="nav-tab" data-tab="devices">📋 设备</li>
+                <li class="nav-tab" data-tab="users">👥 用户</li>
+                <li class="nav-tab" data-tab="settings">⚙️ 设置</li>
             </ul>
-        </nav>
-        
-        <main class="admin-content">
+            
             <!-- 数据看板 -->
             <div id="dashboard" class="tab-content active">
                 <h2 style="margin-bottom: 20px; font-size: 18px;">数据概览</h2>
@@ -591,7 +485,7 @@
                 
                 <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
                     <h3 style="margin-bottom: 15px; font-size: 16px;">📈 设备授权趋势</h3>
-                    <div class="chart-placeholder">
+                    <div style="height: 150px; background: #f8f9fa; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #666; font-size: 13px;">
                         图表区域 - 设备授权时间分布图
                     </div>
                 </div>
@@ -603,17 +497,18 @@
                 
                 <div class="action-bar">
                     <button class="btn btn-primary" onclick="openAddDeviceModal()">
-                        <span>➕</span> 添加设备
+                        ➕ 添加设备
                     </button>
                     <button class="btn btn-success" onclick="exportDevices()">
-                        <span>📤</span> 导出数据
+                        📤 导出数据
                     </button>
                     <button class="btn btn-danger" onclick="deleteExpiredDevices()">
-                        <span>🗑️</span> 清理过期
+                        🗑️ 清理过期
                     </button>
-                    <div class="search-box">
-                        <input type="text" class="search-input" placeholder="搜索设备ID..." onkeyup="filterDevices(this.value)">
-                    </div>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="搜索设备ID..." onkeyup="filterDevices(this.value)">
                 </div>
                 
                 <div class="device-table">
@@ -634,10 +529,10 @@
                 
                 <div class="action-bar">
                     <button class="btn btn-primary" onclick="openAddUserModal()">
-                        <span>➕</span> 添加用户
+                        ➕ 添加用户
                     </button>
                     <button class="btn btn-success" onclick="generateUserReport()">
-                        <span>📊</span> 生成报表
+                        📊 生成报表
                     </button>
                 </div>
                 
@@ -650,78 +545,37 @@
             <div id="settings" class="tab-content">
                 <h2 style="margin-bottom: 20px; font-size: 18px;">⚙️ 系统设置</h2>
                 
-                <div class="settings-grid">
-                    <div class="setting-card">
-                        <h3>📱 显示设置</h3>
-                        <div class="toggle-label">
-                            <span>移动端优化显示</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="mobileView" checked onchange="toggleViewMode()">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="toggle-label">
-                            <span>深色模式</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="darkMode" onchange="toggleDarkMode()">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-card">
-                        <h3>🔔 通知设置</h3>
-                        <div class="toggle-label">
-                            <span>到期提醒</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="expiryAlerts" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="toggle-label">
-                            <span>库存预警</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="lowStockAlerts">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-card">
-                        <h3>🛡️ 安全设置</h3>
-                        <div class="toggle-label">
-                            <span>自动登出 (30分钟)</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="autoLogout" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="toggle-label">
-                            <span>登录提醒</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" id="loginAlerts">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="setting-card">
-                        <h3>💾 数据管理</h3>
-                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="backupData()">
-                            <span>💾</span> 备份数据
-                        </button>
-                        <button class="btn btn-warning" style="width: 100%; margin-bottom: 10px;" onclick="importData()">
-                            <span>📥</span> 导入数据
-                        </button>
-                        <button class="btn btn-danger" style="width: 100%;" onclick="clearAllData()">
-                            <span>🗑️</span> 清空所有数据
-                        </button>
-                    </div>
+                <div class="form-group">
+                    <label>系统名称：</label>
+                    <input type="text" class="form-control" value="设备管理大师" id="systemName">
+                </div>
+                
+                <div class="form-group">
+                    <label>管理员密码：</label>
+                    <input type="password" class="form-control" placeholder="输入新密码" id="newPassword">
+                </div>
+                
+                <div class="form-group">
+                    <label>确认密码：</label>
+                    <input type="password" class="form-control" placeholder="再次输入新密码" id="confirmPassword">
+                </div>
+                
+                <button class="btn btn-primary" onclick="updateSettings()">
+                    保存设置
+                </button>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-success" onclick="backupData()" style="margin-bottom: 10px;">
+                        💾 备份数据
+                    </button>
+                    <button class="btn btn-danger" onclick="clearAllData()">
+                        🗑️ 清空数据
+                    </button>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
-    
+
     <!-- 添加设备模态框 -->
     <div id="addDeviceModal" class="modal">
         <div class="modal-content">
@@ -735,16 +589,15 @@
             <div class="form-group">
                 <label>套餐类型：</label>
                 <select id="newPackage" class="form-control">
-                    <option value="trial">🎁 体验卡 (7天)</option>
-                    <option value="monthly">⭐ 月卡 (30天)</option>
-                    <option value="quarterly">🌟🌟 季卡 (90天)</option>
-                    <option value="yearly">🌟🌟🌟 年卡 (365天)</option>
-                    <option value="permanent">🏆 永久授权</option>
+                    <option value="monthly">月卡 (30天)</option>
+                    <option value="quarterly">季卡 (90天)</option>
+                    <option value="yearly">年卡 (365天)</option>
+                    <option value="permanent">永久授权</option>
                 </select>
             </div>
             
             <div class="modal-actions">
-                <button class="btn" onclick="closeAddDeviceModal()" style="background: #6c757d; color: white;">取消</button>
+                <button class="btn btn-secondary" onclick="closeAddDeviceModal()">取消</button>
                 <button class="btn btn-primary" onclick="addDevice()">确认添加</button>
             </div>
         </div>
@@ -768,20 +621,26 @@
             <div class="form-group">
                 <label>角色：</label>
                 <select id="newUserRole" class="form-control">
-                    <option value="user">👤 普通用户</option>
-                    <option value="admin">👑 管理员</option>
-                    <option value="viewer">👀 查看者</option>
+                    <option value="user">普通用户</option>
+                    <option value="admin">管理员</option>
+                    <option value="viewer">查看者</option>
                 </select>
             </div>
             
             <div class="modal-actions">
-                <button class="btn" onclick="closeAddUserModal()" style="background: #6c757d; color: white;">取消</button>
+                <button class="btn btn-secondary" onclick="closeAddUserModal()">取消</button>
                 <button class="btn btn-primary" onclick="addUser()">确认添加</button>
             </div>
         </div>
     </div>
 
     <script>
+        // 管理员账号信息
+        const ADMIN_ACCOUNT = {
+            username: 'admin',
+            password: '123456'
+        };
+        
         // 示例设备数据
         let devices = [
             {
@@ -807,10 +666,10 @@
             },
             {
                 id: "TV888888888", 
-                package: "trial",
+                package: "quarterly",
                 activate_date: "2024-01-20",
-                expire_date: "2024-01-27",
-                status: "expired"
+                expire_date: "2024-04-20",
+                status: "active"
             }
         ];
 
@@ -845,14 +704,82 @@
             }
         ];
         
+        // 当前登录用户
+        let currentUser = null;
+        
         // 初始化页面
         document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否已登录
+            checkLoginStatus();
+            setupTabNavigation();
+        });
+        
+        // 检查登录状态
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showAdminPage();
+            } else {
+                showLoginPage();
+            }
+        }
+        
+        // 显示登录页面
+        function showLoginPage() {
+            document.getElementById('loginPage').style.display = 'block';
+            document.getElementById('adminPage').style.display = 'none';
+        }
+        
+        // 显示管理页面
+        function showAdminPage() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('adminPage').style.display = 'block';
+            
+            // 更新用户信息
+            document.getElementById('currentUserName').textContent = currentUser.name;
+            document.getElementById('currentUserRole').textContent = getRoleText(currentUser.role);
+            
+            // 加载数据
             loadDevices();
             loadUsers();
             updateStats();
-            setupTabNavigation();
-            loadSettings();
-        });
+        }
+        
+        // 登录功能
+        function login() {
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            
+            if (!username || !password) {
+                showToast('请输入账号和密码');
+                return;
+            }
+            
+            if (username === ADMIN_ACCOUNT.username && password === ADMIN_ACCOUNT.password) {
+                currentUser = {
+                    name: '系统管理员',
+                    role: 'admin',
+                    loginTime: new Date().toISOString()
+                };
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showAdminPage();
+                showToast('登录成功！');
+            } else {
+                showToast('账号或密码错误');
+            }
+        }
+        
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                showLoginPage();
+                showToast('已退出登录');
+            }
+        }
         
         // 设置标签页导航
         function setupTabNavigation() {
@@ -921,13 +848,21 @@
         
         function getPackageText(packageType) {
             const packages = {
-                'trial': '体验卡',
                 'monthly': '月卡',
                 'quarterly': '季卡',
                 'yearly': '年卡',
                 'permanent': '永久授权'
             };
             return packages[packageType] || packageType;
+        }
+        
+        function getRoleText(role) {
+            const roles = {
+                'admin': '系统管理员',
+                'user': '普通用户', 
+                'viewer': '查看者'
+            };
+            return roles[role] || role;
         }
         
         // 加载用户列表
@@ -937,43 +872,28 @@
             
             users.forEach(user => {
                 const userCard = document.createElement('div');
-                userCard.className = 'user-card';
+                userCard.className = 'user-info';
                 userCard.innerHTML = `
-                    <div class="user-info">
-                        <div class="user-details">
-                            <div class="user-name">${user.name}</div>
-                            <div class="user-role">${getRoleText(user.role)} • ${user.email}</div>
-                            <div class="user-stats">
-                                <div class="stat">
-                                    <div class="stat-value">${user.devices}</div>
-                                    <div class="stat-label">总设备</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-value">${user.active}</div>
-                                    <div class="stat-label">有效设备</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-value">${user.created}</div>
-                                    <div class="stat-label">注册时间</div>
-                                </div>
-                            </div>
+                    <div class="user-name">${user.name}</div>
+                    <div class="user-role">${getRoleText(user.role)} • ${user.email}</div>
+                    <div style="margin-top: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div style="text-align: center;">
+                            <div style="font-weight: bold; font-size: 16px;">${user.devices}</div>
+                            <div style="font-size: 11px; color: #666;">总设备</div>
                         </div>
-                        <div>
-                            <button class="btn btn-danger" onclick="deleteUser(${user.id})">删除</button>
+                        <div style="text-align: center;">
+                            <div style="font-weight: bold; font-size: 16px;">${user.active}</div>
+                            <div style="font-size: 11px; color: #666;">有效设备</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-weight: bold; font-size: 16px;">${user.created}</div>
+                            <div style="font-size: 11px; color: #666;">注册时间</div>
                         </div>
                     </div>
+                    ${user.role !== 'admin' ? `<button class="btn btn-danger" onclick="deleteUser(${user.id})" style="margin-top: 10px; padding: 8px 15px; font-size: 14px;">删除用户</button>` : ''}
                 `;
                 usersList.appendChild(userCard);
             });
-        }
-        
-        function getRoleText(role) {
-            const roles = {
-                'admin': '👑 管理员',
-                'user': '👤 普通用户', 
-                'viewer': '👀 查看者'
-            };
-            return roles[role] || role;
         }
         
         // 删除单个设备
@@ -982,25 +902,20 @@
                 devices = devices.filter(d => d.id !== deviceId);
                 loadDevices();
                 updateStats();
-                alert(`设备 ${deviceId} 已删除`);
+                showToast(`设备 ${deviceId} 已删除`);
             }
         }
         
         // 删除用户
         function deleteUser(userId) {
             const user = users.find(u => u.id === userId);
-            if (user && confirm(`确定要删除用户 ${user.name} 吗？此操作不可撤销！`)) {
+            if (user && user.role !== 'admin' && confirm(`确定要删除用户 ${user.name} 吗？此操作不可撤销！`)) {
                 users = users.filter(u => u.id !== userId);
                 loadUsers();
-                alert(`用户 ${user.name} 已删除`);
+                showToast(`用户 ${user.name} 已删除`);
+            } else if (user && user.role === 'admin') {
+                showToast('不能删除管理员账户');
             }
-        }
-        
-        // 刷新设备列表
-        function refreshDevices() {
-            loadDevices();
-            updateStats();
-            alert('设备列表已刷新');
         }
         
         // 更新统计信息
@@ -1036,6 +951,11 @@
         
         // 打开添加用户模态框
         function openAddUserModal() {
+            // 检查权限
+            if (currentUser.role !== 'admin') {
+                showToast('只有管理员可以添加用户');
+                return;
+            }
             document.getElementById('addUserModal').style.display = 'flex';
         }
         
@@ -1052,20 +972,19 @@
             const packageType = document.getElementById('newPackage').value;
             
             if (!deviceId) {
-                alert('请输入设备ID');
+                showToast('请输入设备ID');
                 return;
             }
             
             // 检查设备ID是否已存在
             if (devices.some(d => d.id === deviceId)) {
-                alert('设备ID已存在，请使用不同的设备ID');
+                showToast('设备ID已存在，请使用不同的设备ID');
                 return;
             }
             
             // 计算到期日期
             const today = new Date();
             const durations = {
-                'trial': 7,
                 'monthly': 30,
                 'quarterly': 90,
                 'yearly': 365,
@@ -1094,7 +1013,7 @@
             updateStats();
             closeAddDeviceModal();
             
-            alert(`✅ 设备 ${deviceId} 添加成功！`);
+            showToast(`✅ 设备 ${deviceId} 添加成功！`);
         }
         
         // 添加用户
@@ -1104,7 +1023,7 @@
             const role = document.getElementById('newUserRole').value;
             
             if (!name || !email) {
-                alert('请填写完整的用户信息');
+                showToast('请填写完整的用户信息');
                 return;
             }
             
@@ -1122,7 +1041,7 @@
             users.push(newUser);
             loadUsers();
             closeAddUserModal();
-            alert(`✅ 用户 ${name} 添加成功！`);
+            showToast(`✅ 用户 ${name} 添加成功！`);
         }
         
         // 导出设备数据
@@ -1138,7 +1057,7 @@
         
         // 生成用户报表
         function generateUserReport() {
-            alert('用户报表生成功能开发中...');
+            showToast('用户报表生成功能开发中...');
         }
         
         // 删除过期设备
@@ -1147,7 +1066,7 @@
             const expiredCount = expiredDevices.length;
             
             if (expiredCount === 0) {
-                alert('没有找到过期设备');
+                showToast('没有找到过期设备');
                 return;
             }
             
@@ -1157,7 +1076,7 @@
                 devices = devices.filter(d => d.package === "permanent" || new Date(d.expire_date) >= new Date());
                 loadDevices();
                 updateStats();
-                alert(`已删除 ${expiredCount} 个过期设备`);
+                showToast(`已删除 ${expiredCount} 个过期设备`);
             }
         }
         
@@ -1168,22 +1087,6 @@
                 const text = row.textContent.toLowerCase();
                 row.style.display = text.includes(query.toLowerCase()) ? 'grid' : 'none';
             });
-        }
-        
-        // 切换显示模式
-        function toggleViewMode() {
-            const isMobile = document.getElementById('mobileView').checked;
-            document.body.style.fontSize = isMobile ? '14px' : '16px';
-            localStorage.setItem('mobileView', isMobile);
-            alert(isMobile ? '已切换到移动端优化显示' : '已切换到桌面端显示');
-        }
-        
-        // 切换深色模式
-        function toggleDarkMode() {
-            const isDark = document.getElementById('darkMode').checked;
-            document.body.classList.toggle('dark-mode', isDark);
-            localStorage.setItem('darkMode', isDark);
-            alert(isDark ? '已切换到深色模式' : '已切换到浅色模式');
         }
         
         // 备份数据
@@ -1201,12 +1104,7 @@
             link.href = URL.createObjectURL(dataBlob);
             link.download = `system_backup_${new Date().toISOString().split('T')[0]}.json`;
             link.click();
-            alert('数据备份成功！');
-        }
-        
-        // 导入数据
-        function importData() {
-            alert('数据导入功能开发中...');
+            showToast('数据备份成功！');
         }
         
         // 清空所有数据
@@ -1217,20 +1115,47 @@
                 loadDevices();
                 loadUsers();
                 updateStats();
-                alert('所有数据已清空');
+                showToast('所有数据已清空');
             }
         }
         
-        // 加载设置
-        function loadSettings() {
-            const mobileView = localStorage.getItem('mobileView') !== 'false'; // 默认开启移动端优化
-            const darkMode = localStorage.getItem('darkMode') === 'true';
+        // 更新设置
+        function updateSettings() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
             
-            document.getElementById('mobileView').checked = mobileView;
-            document.getElementById('darkMode').checked = darkMode;
+            if (newPassword && newPassword !== confirmPassword) {
+                showToast('两次输入的密码不一致');
+                return;
+            }
             
-            if (mobileView) toggleViewMode();
-            if (darkMode) toggleDarkMode();
+            if (newPassword) {
+                ADMIN_ACCOUNT.password = newPassword;
+                showToast('密码更新成功');
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            }
+            
+            showToast('设置保存成功');
+        }
+        
+        // 显示Toast提示
+        function showToast(message) {
+            // 移除现有的toast
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
         }
         
         // 点击模态框外部关闭

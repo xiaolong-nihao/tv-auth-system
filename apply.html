@@ -6,9 +6,13 @@
     <title>设备授权购买</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --success: #10b981;
-            --warning: #f59e0b;
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
         }
         
         * {
@@ -29,99 +33,411 @@
         
         .container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            max-width: 800px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             width: 100%;
+            max-width: 500px;
             overflow: hidden;
         }
         
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, #1e40af 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
         }
         
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
         .main-content {
-            padding: 30px;
+            padding: 20px;
         }
         
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
+        .section {
             margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 1px solid #f1f5f9;
         }
         
-        .package-grid {
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #444;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .package-selector {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
         }
         
-        .package-card {
-            border: 2px solid #e2e8f0;
+        .package-option {
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .package-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .package-option.selected {
+            border-color: var(--primary);
+            background: #f8f9ff;
+        }
+        
+        .package-option.popular {
+            border-color: var(--warning);
+            background: linear-gradient(135deg, #fffaf0 0%, #fff5e6 100%);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--warning);
+            color: white;
+            padding: 4px 12px;
             border-radius: 12px;
-            padding: 25px;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .package-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .package-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .package-period {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .payment-option {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 12px 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .package-card:hover {
+        .payment-option:hover {
             border-color: var(--primary);
-            transform: translateY(-5px);
         }
         
-        .package-card.selected {
+        .payment-option.selected {
             border-color: var(--primary);
-            background: #f0f9ff;
+            background: #f8f9ff;
+        }
+        
+        .payment-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .payment-name {
+            font-size: 12px;
+            font-weight: 600;
         }
         
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 24px;
+            display: block;
+            width: 100%;
+            padding: 14px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin: 5px;
+            transition: all 0.3s;
         }
         
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
         }
         
-        .btn-success {
-            background: var(--success);
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
             color: white;
         }
         
-        .device-info {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .result-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .result-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            white-space: pre-wrap;
             font-family: monospace;
-            word-break: break-all;
+            font-size: 14px;
+            margin-bottom: 15px;
         }
         
         .contact-info {
-            background: #f0fdf4;
-            border: 2px solid #bbf7d0;
-            border-radius: 12px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .contact-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .contact-details {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .device-status {
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-expired {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-not-found {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .loading {
+            text-align: center;
             padding: 20px;
-            margin: 20px 0;
+            color: #6c757d;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #dc3545;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 10000;
+            animation: fadeInOut 2s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -40%); }
+            20% { opacity: 1; transform: translate(-50%, -50%); }
+            80% { opacity: 1; transform: translate(-50%, -50%); }
+            100% { opacity: 0; transform: translate(-50%, -60%); }
+        }
+        
+        .device-help-details {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .device-help-details h4 {
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .device-help-details ul {
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .device-help-details li {
+            margin-bottom: 5px;
+        }
+        
+        .device-help-details code {
+            background: #e9ecef;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .help-tip {
+            background: #f0f7ff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .contact-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .contact-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .contact-btn.wechat {
+            background: #07c160;
+            color: white;
+        }
+        
+        .contact-btn.qq {
+            background: #12b7f5;
+            color: white;
+        }
+        
+        .contact-btn.email {
+            background: #ea4335;
+            color: white;
+        }
+        
+        .contact-btn.copy {
+            background: var(--primary);
+            color: white;
         }
     </style>
 </head>
@@ -129,293 +445,491 @@
     <div class="container">
         <div class="header">
             <h1>📱 设备授权购买</h1>
-            <p>选择套餐并获取设备指纹，联系管理员开通授权</p>
+            <p>选择套餐，联系客服开通服务</p>
         </div>
         
         <div class="main-content">
-            <!-- 设备信息显示 -->
-            <div class="card">
-                <h3>您的设备信息</h3>
-                <div class="device-info">
-                    <strong>设备指纹：</strong>
-                    <div id="deviceFingerprint" style="margin: 10px 0; font-size: 14px;"></div>
-                    <button class="btn btn-primary" onclick="copyFingerprint()">
-                        📋 复制设备指纹
+            <!-- 设备信息输入 -->
+            <div class="section">
+                <div class="section-title">
+                    <i>🔍</i> 设备信息
+                </div>
+                
+                <!-- 设备类型选择 -->
+                <div class="form-group">
+                    <label>设备类型：</label>
+                    <select class="form-control" id="deviceType" onchange="selectDeviceType(this.value)">
+                        <option value="tv">📺 电视</option>
+                        <option value="phone">📱 手机</option>
+                        <option value="tablet">📦 平板</option>
+                        <option value="box">🖥️ 电视盒子</option>
+                    </select>
+                </div>
+                
+                <!-- 联系方式 -->
+                <div class="form-group">
+                    <label for="contact">联系方式：</label>
+                    <input type="text" id="contact" class="form-control" placeholder="微信号或QQ号">
+                </div>
+                
+                <!-- 设备ID输入 -->
+                <div class="form-group">
+                    <label for="deviceId">设备ID：</label>
+                    <input type="text" id="deviceId" class="form-control" placeholder="请输入设备ID">
+                    <div id="deviceHelp" class="help-tip">
+                        <strong>如何获取设备ID：</strong>
+                        <div id="helpContent" class="device-help-details">
+                            <!-- 设备ID获取说明将通过JavaScript动态加载 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="checkDeviceStatus()">
+                    查询设备状态
+                </button>
+            </div>
+            
+            <!-- 套餐选择 -->
+            <div class="section">
+                <div class="section-title">
+                    <i>💰</i> 套餐选择
+                </div>
+                <div class="package-selector">
+                    <div class="package-option" onclick="selectPackage('monthly')">
+                        <div class="package-name">月卡</div>
+                        <div class="package-price">¥29</div>
+                        <div class="package-period">30天授权</div>
+                    </div>
+                    
+                    <div class="package-option popular selected" onclick="selectPackage('quarterly')">
+                        <div class="popular-badge">🔥 热门推荐</div>
+                        <div class="package-name">季卡</div>
+                        <div class="package-price">¥79</div>
+                        <div class="package-period">90天授权</div>
+                    </div>
+                    
+                    <div class="package-option" onclick="selectPackage('yearly')">
+                        <div class="package-name">年卡</div>
+                        <div class="package-price">¥299</div>
+                        <div class="package-period">365天授权</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 生成订单按钮 -->
+            <button class="btn btn-primary" onclick="generateOrder()">
+                生成订单信息
+            </button>
+            
+            <!-- 查询结果 -->
+            <div id="deviceStatusResult" class="result-section">
+                <div class="result-title">设备状态查询结果</div>
+                <div id="statusContent"></div>
+            </div>
+            
+            <!-- 订单信息 -->
+            <div id="orderResult" class="result-section">
+                <div class="result-title">订单信息</div>
+                <div id="orderContent" class="result-content"></div>
+                <div class="contact-buttons">
+                    <button class="contact-btn wechat" onclick="copyToWechat()">
+                        💬 复制微信信息
+                    </button>
+                    <button class="contact-btn qq" onclick="copyToQQ()">
+                        💙 复制QQ信息
+                    </button>
+                    <button class="contact-btn email" onclick="sendEmail()">
+                        📧 发送邮件
+                    </button>
+                    <button class="contact-btn copy" onclick="copyOrderToClipboard()">
+                        📋 复制订单
                     </button>
                 </div>
             </div>
-
-            <!-- 套餐选择 -->
-            <div class="card">
-                <h3>选择授权套餐</h3>
-                <div class="package-grid">
-                    <div class="package-card" onclick="selectPackage('monthly', 30)">
-                        <h4>月卡套餐</h4>
-                        <div style="font-size: 24px; color: var(--primary); margin: 10px 0;">¥30</div>
-                        <p>30天授权</p>
-                        <div style="color: #64748b; font-size: 14px; margin-top: 10px;">
-                            📅 30天使用权限<br>
-                            🔄 免费更新<br>
-                            📧 技术支持
-                        </div>
-                    </div>
-                    
-                    <div class="package-card" onclick="selectPackage('quarterly', 90)">
-                        <h4>季卡套餐</h4>
-                        <div style="font-size: 24px; color: var(--primary); margin: 10px 0;">¥80</div>
-                        <p>90天授权</p>
-                        <div style="color: #64748b; font-size: 14px; margin-top: 10px;">
-                            📅 90天使用权限<br>
-                            🔄 免费更新<br>
-                            📧 优先技术支持<br>
-                            💰 省 ¥10
-                        </div>
-                    </div>
-                    
-                    <div class="package-card" onclick="selectPackage('yearly', 365)">
-                        <h4>年卡套餐</h4>
-                        <div style="font-size: 24px; color: var(--primary); margin: 10px 0;">¥280</div>
-                        <p>365天授权</p>
-                        <div style="color: #64748b; font-size: 14px; margin-top: 10px;">
-                            📅 365天使用权限<br>
-                            🔄 免费更新<br>
-                            📧 专属技术支持<br>
-                            🎁 省 ¥80
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 联系信息 -->
-            <div class="card">
-                <h3>联系管理员开通</h3>
-                <div class="contact-info">
-                    <p>请将以下信息发送给管理员：</p>
-                    <div style="margin: 15px 0;">
-                        <strong>设备指纹：</strong> <span id="displayFingerprint"></span><br>
-                        <strong>选择套餐：</strong> <span id="selectedPackage">未选择</span><br>
-                        <strong>授权天数：</strong> <span id="selectedDays">0</span> 天
-                    </div>
-                    
-                    <div style="margin-top: 20px;">
-                        <h4>管理员联系方式：</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                            <button class="btn" onclick="copyToWechat()" style="background: #07c160; color: white;">
-                                💬 复制微信信息
-                            </button>
-                            <button class="btn" onclick="copyToQQ()" style="background: #12b7f5; color: white;">
-                                💙 复制QQ信息
-                            </button>
-                            <button class="btn" onclick="copyToEmail()" style="background: #ea4335; color: white;">
-                                📧 复制邮件内容
-                            </button>
-                            <button class="btn" onclick="generateOrderImage()" style="background: var(--warning); color: white;">
-                                🖼️ 生成订单图片
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 购买记录 -->
-            <div class="card">
-                <h3>购买记录</h3>
-                <div id="orderHistory">
-                    <p style="color: #64748b; text-align: center;">暂无购买记录</p>
+            
+            <!-- 联系方式 -->
+            <div class="contact-info">
+                <div class="contact-title">📞 客服联系方式</div>
+                <div class="contact-details">
+                    微信：service123<br>
+                    QQ：123456789<br>
+                    邮箱：service@example.com<br>
+                    服务时间：9:00-18:00
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 用户选择的套餐
-        let selectedPackage = null;
-        let selectedDays = 0;
-        let deviceFingerprint = '';
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', async function() {
-            await generateDeviceFingerprint();
-            loadOrderHistory();
+        // 全局变量
+        let selectedPackage = 'quarterly';
+        let selectedDeviceType = 'tv';
+        let currentOrder = null;
+        
+        // 设备类型帮助信息
+        const deviceHelpInfo = {
+            'tv': {
+                title: '电视设备ID获取方法',
+                steps: [
+                    '方法一：查看电视机身背面标签上的"序列号"或"SN"',
+                    '方法二：进入电视系统设置 → 关于本机 → 设备信息',
+                    '方法三：在电视遥控器上按"菜单"键 → 系统信息',
+                    '方法四：部分电视可在工程模式查看，通常按遥控器特定组合键'
+                ]
+            },
+            'phone': {
+                title: '手机设备ID获取方法',
+                steps: [
+                    '方法一：在拨号界面输入 <code>*#06#</code> 获取IMEI码',
+                    '方法二：进入设置 → 关于手机 → 状态信息 → IMEI信息',
+                    '方法三：查看手机包装盒或购买凭证上的IMEI码',
+                    '方法四：部分手机可在SIM卡托盘上找到IMEI码',
+                    '注意：双卡手机通常有两个IMEI，任选一个即可'
+                ]
+            },
+            'tablet': {
+                title: '平板设备ID获取方法',
+                steps: [
+                    '方法一：进入设置 → 关于平板电脑 → 状态 → 序列号',
+                    '方法二：查看平板背面或边框上的序列号标签',
+                    '方法三：在包装盒或购买发票上查找序列号',
+                    '方法四：部分平板支持在拨号界面输入 <code>*#06#</code>'
+                ]
+            },
+            'box': {
+                title: '电视盒子设备ID获取方法',
+                steps: [
+                    '方法一：查看盒子机身底部或背面的"序列号"标签',
+                    '方法二：进入盒子设置 → 关于 → 设备信息',
+                    '方法三：在系统信息或网络设置中查找MAC地址',
+                    '方法四：部分盒子可在工程模式查看设备标识'
+                ]
+            }
+        };
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 显示默认设备类型的帮助信息
+            updateDeviceHelp();
         });
-
-        // 生成设备指纹
-        async function generateDeviceFingerprint() {
-            const components = [
-                navigator.userAgent,
-                navigator.platform,
-                navigator.language,
-                screen.width + 'x' + screen.height,
-                new Date().getTimezoneOffset().toString(),
-                navigator.hardwareConcurrency || 'unknown'
-            ];
-            
-            const fingerprintString = components.join('|');
-            const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(fingerprintString));
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            deviceFingerprint = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            
-            document.getElementById('deviceFingerprint').textContent = deviceFingerprint;
-            document.getElementById('displayFingerprint').textContent = deviceFingerprint;
+        
+        // 选择设备类型
+        function selectDeviceType(deviceType) {
+            selectedDeviceType = deviceType;
+            updateDeviceHelp();
         }
-
+        
+        // 更新设备帮助信息
+        function updateDeviceHelp() {
+            const helpTip = document.getElementById('deviceHelp');
+            const helpContent = document.getElementById('helpContent');
+            const deviceInfo = deviceHelpInfo[selectedDeviceType];
+            
+            let html = `<h4>${deviceInfo.title}</h4><ul>`;
+            deviceInfo.steps.forEach(step => {
+                html += `<li>${step}</li>`;
+            });
+            html += '</ul>';
+            
+            helpContent.innerHTML = html;
+            helpTip.style.display = 'block';
+        }
+        
         // 选择套餐
-        function selectPackage(pkgType, days) {
-            // 移除之前的选择
-            document.querySelectorAll('.package-card').forEach(card => {
-                card.classList.remove('selected');
-            });
+        function selectPackage(packageType) {
+            selectedPackage = packageType;
             
-            // 设置新的选择
+            // 更新UI
+            document.querySelectorAll('.package-option').forEach(option => {
+                option.classList.remove('selected');
+            });
             event.currentTarget.classList.add('selected');
-            selectedPackage = pkgType;
-            selectedDays = days;
+        }
+        
+        // 检查设备状态
+        async function checkDeviceStatus() {
+            const deviceId = document.getElementById('deviceId').value.trim();
+            const statusContent = document.getElementById('statusContent');
+            const resultSection = document.getElementById('deviceStatusResult');
             
-            document.getElementById('selectedPackage').textContent = getPackageName(pkgType);
-            document.getElementById('selectedDays').textContent = days;
-        }
-
-        // 获取套餐名称
-        function getPackageName(pkgType) {
-            const names = {
-                'monthly': '月卡套餐',
-                'quarterly': '季卡套餐',
-                'yearly': '年卡套餐'
-            };
-            return names[pkgType] || pkgType;
-        }
-
-        // 复制设备指纹
-        function copyFingerprint() {
-            navigator.clipboard.writeText(deviceFingerprint).then(() => {
-                alert('设备指纹已复制到剪贴板');
-            });
-        }
-
-        // 复制微信信息
-        function copyToWechat() {
-            if (!selectedPackage) {
-                alert('请先选择套餐');
+            if (!deviceId) {
+                showToast('请输入设备ID');
                 return;
             }
             
-            const message = `设备授权购买申请：
-设备指纹：${deviceFingerprint}
-选择套餐：${getPackageName(selectedPackage)}
-授权天数：${selectedDays}天
-购买时间：${new Date().toLocaleString()}`;
+            statusContent.innerHTML = '<div class="loading">🔍 查询中...</div>';
+            resultSection.style.display = 'block';
             
-            navigator.clipboard.writeText(message).then(() => {
-                alert('购买信息已复制，请发送给微信管理员');
-            });
+            try {
+                // 模拟从服务器获取设备数据
+                const devicesData = await fetchDevicesData();
+                const devices = devicesData.authorized_devices || [];
+                const device = devices.find(d => d.device_id === deviceId);
+                
+                let statusHtml = '';
+                
+                if (device) {
+                    const isExpired = new Date(device.expire_date) < new Date();
+                    const daysRemaining = Math.ceil((new Date(device.expire_date) - new Date()) / (1000 * 60 * 60 * 24));
+                    
+                    statusHtml = `
+                        <div class="device-status ${isExpired ? 'status-expired' : 'status-active'}">
+                            ${isExpired ? '❌ 已过期' : '✅ 授权有效'}
+                        </div>
+                        <div class="result-content">
+设备ID：${device.device_id}
+用户：${device.owner}
+联系方式：${device.contact}
+套餐：${device.package}
+激活日期：${device.activate_date}
+到期日期：${device.expire_date}
+${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
+                        </div>
+                    `;
+                } else {
+                    statusHtml = `
+                        <div class="device-status status-not-found">
+                            ❓ 设备未授权
+                        </div>
+                        <p>该设备尚未获得授权，请购买套餐。</p>
+                    `;
+                }
+                
+                statusContent.innerHTML = statusHtml;
+                
+            } catch (error) {
+                statusContent.innerHTML = `
+                    <div class="error">
+                        ❌ 查询失败: ${error.message}
+                        <br>
+                        <button class="btn btn-secondary" onclick="checkDeviceStatus()">重试</button>
+                    </div>
+                `;
+            }
         }
+        
+        // 生成订单信息
+        function generateOrder() {
+            const deviceId = document.getElementById('deviceId').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+            
+            if (!deviceId) {
+                showToast('请输入设备ID');
+                return;
+            }
+            
+            if (!contact) {
+                showToast('请输入联系方式');
+                return;
+            }
+            
+            // 创建订单
+            const packageInfo = getPackageInfo(selectedPackage);
+            currentOrder = {
+                id: 'ORD' + Date.now().toString().slice(-6),
+                packageName: packageInfo.name,
+                packageType: selectedPackage,
+                deviceId: deviceId,
+                contact: contact,
+                deviceType: selectedDeviceType,
+                amount: packageInfo.price,
+                date: new Date().toLocaleString('zh-CN'),
+                status: 'pending'
+            };
+            
+            // 显示订单信息
+            showOrderInfo(currentOrder);
+        }
+        
+        // 显示订单信息
+        function showOrderInfo(order) {
+            const orderContent = document.getElementById('orderContent');
+            const resultSection = document.getElementById('orderResult');
+            
+            const orderText = `【设备授权购买订单】
+订单号：${order.id}
+设备类型：${getDeviceTypeName(order.deviceType)}
+设备ID：${order.deviceId}
+联系方式：${order.contact}
+选择套餐：${order.packageName}
+订单金额：¥${order.amount}
+下单时间：${order.date}
 
-        // 复制QQ信息
+请将此订单信息发送给客服完成支付和开通。`;
+            
+            orderContent.textContent = orderText;
+            resultSection.style.display = 'block';
+            
+            // 滚动到结果区域
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // 复制到微信
+        function copyToWechat() {
+            if (!currentOrder) {
+                showToast('请先生成订单信息');
+                return;
+            }
+            
+            const orderText = formatOrderForContact(currentOrder);
+            copyToClipboard(orderText);
+            showToast('✅ 订单信息已复制，请发送给微信客服');
+        }
+        
+        // 复制到QQ
         function copyToQQ() {
             copyToWechat(); // 复用相同逻辑
         }
-
-        // 复制邮件内容
-        function copyToEmail() {
-            if (!selectedPackage) {
-                alert('请先选择套餐');
+        
+        // 发送邮件
+        function sendEmail() {
+            if (!currentOrder) {
+                showToast('请先生成订单信息');
                 return;
             }
             
-            const subject = `设备授权购买申请 - ${getPackageName(selectedPackage)}`;
+            const subject = `设备授权购买订单 - ${currentOrder.id}`;
             const body = `尊敬的管理员：
 
-我想购买设备授权服务，详情如下：
+我想购买设备授权服务，订单信息如下：
 
-设备指纹：${deviceFingerprint}
-选择套餐：${getPackageName(selectedPackage)}
-授权天数：${selectedDays}天
-购买时间：${new Date().toLocaleString()}
+${formatOrderForContact(currentOrder)}
 
-请审核并开通授权，谢谢！
+请审核订单并告知支付方式，谢谢！
 
 此致
 敬礼`;
             
-            const mailtoLink = `mailto:admin@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            const mailtoLink = `mailto:service@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             window.location.href = mailtoLink;
         }
-
-        // 生成订单图片
-        function generateOrderImage() {
-            if (!selectedPackage) {
-                alert('请先选择套餐');
+        
+        // 复制订单到剪贴板
+        function copyOrderToClipboard() {
+            if (!currentOrder) {
+                showToast('请先生成订单信息');
                 return;
             }
             
-            // 这里可以集成二维码生成库
-            const orderInfo = {
-                fingerprint: deviceFingerprint,
-                package: selectedPackage,
-                days: selectedDays,
-                timestamp: new Date().toISOString()
+            const orderText = formatOrderForContact(currentOrder);
+            copyToClipboard(orderText);
+            showToast('✅ 订单信息已复制到剪贴板！');
+        }
+        
+        // 格式化订单信息用于联系
+        function formatOrderForContact(order) {
+            return `设备授权购买订单：
+订单号：${order.id}
+设备类型：${getDeviceTypeName(order.deviceType)}
+设备ID：${order.deviceId}
+联系方式：${order.contact}
+选择套餐：${order.packageName}
+订单金额：¥${order.amount}
+下单时间：${order.date}`;
+        }
+        
+        // 获取设备类型名称
+        function getDeviceTypeName(deviceType) {
+            const deviceNames = {
+                'tv': '电视',
+                'phone': '手机',
+                'tablet': '平板',
+                'box': '电视盒子'
             };
             
-            const orderString = JSON.stringify(orderInfo);
-            alert('订单信息已生成：\n' + orderString + '\n\n请截图保存并发送给管理员');
+            return deviceNames[deviceType] || '未知设备';
         }
-
-        // 加载订单历史
-        function loadOrderHistory() {
-            const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-            const historyDiv = document.getElementById('orderHistory');
+        
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    // 成功提示在调用函数中处理
+                }).catch(err => {
+                    fallbackCopyToClipboard(text);
+                });
+            } else {
+                fallbackCopyToClipboard(text);
+            }
+        }
+        
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
             
-            if (history.length === 0) {
-                return;
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                showToast('❌ 复制失败，请手动选择复制');
             }
             
-            historyDiv.innerHTML = '';
-            history.forEach(order => {
-                const orderElement = document.createElement('div');
-                orderElement.style.cssText = `
-                    background: #f8fafc;
-                    padding: 15px;
-                    border-radius: 8px;
-                    margin: 10px 0;
-                    border-left: 4px solid var(--primary);
-                `;
-                orderElement.innerHTML = `
-                    <strong>${getPackageName(order.package)}</strong>
-                    <div style="font-size: 12px; color: #64748b;">
-                        天数: ${order.days}天 | 时间: ${new Date(order.timestamp).toLocaleString()}
-                    </div>
-                    <div style="font-size: 11px; color: #94a3b8; margin-top: 5px;">
-                        设备指纹: ${order.fingerprint.substring(0, 16)}...
-                    </div>
-                `;
-                historyDiv.appendChild(orderElement);
+            document.body.removeChild(textArea);
+        }
+        
+        // 获取套餐信息
+        function getPackageInfo(packageType) {
+            const packages = {
+                'monthly': { name: '月卡', price: 29 },
+                'quarterly': { name: '季卡', price: 79 },
+                'yearly': { name: '年卡', price: 299 }
+            };
+            
+            return packages[packageType] || packages['quarterly'];
+        }
+        
+        // 模拟获取设备数据
+        async function fetchDevicesData() {
+            // 模拟网络请求延迟
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({
+                        authorized_devices: [
+                            {
+                                device_id: "1234567890",
+                                owner: "张三",
+                                contact: "13800138000",
+                                package: "季卡",
+                                activate_date: "2024-01-01",
+                                expire_date: "2024-04-01"
+                            },
+                            {
+                                device_id: "0987654321",
+                                owner: "李四",
+                                contact: "wechat123",
+                                package: "月卡",
+                                activate_date: "2024-01-10",
+                                expire_date: "2024-02-09"
+                            }
+                        ]
+                    });
+                }, 800);
             });
         }
-
-        // 保存订单记录
-        function saveOrder() {
-            if (!selectedPackage) return;
-            
-            const order = {
-                fingerprint: deviceFingerprint,
-                package: selectedPackage,
-                days: selectedDays,
-                timestamp: new Date().toISOString()
-            };
-            
-            const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
-            history.unshift(order);
-            localStorage.setItem('orderHistory', JSON.stringify(history));
-            
-            loadOrderHistory();
-        }
-
-        // 为按钮添加保存功能
-        document.querySelectorAll('.btn').forEach(btn => {
-            if (btn.textContent.includes('复制') || btn.textContent.includes('生成')) {
-                btn.addEventListener('click', saveOrder);
+        
+        // 显示Toast提示
+        function showToast(message) {
+            // 移除现有的toast
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
             }
-        });
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
     </script>
 </body>
 </html>

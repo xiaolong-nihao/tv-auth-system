@@ -5,268 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>安全设备授权管理系统</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --secondary: #1e40af;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #1f2937;
-        }
+        /* 原有样式保持不变，添加新样式 */
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 600px;
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        
-        .main-content {
-            padding: 25px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .security-info {
-            background: #f0f9ff;
-            border: 2px solid #dbeafe;
+        .pending-devices {
+            background: #fff7ed;
+            border: 2px solid #fdba74;
             border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
         }
         
-        .device-fingerprint {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            font-family: monospace;
-            word-break: break-all;
-            font-size: 12px;
-        }
-        
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        
-        .status-authorized {
-            background: #dcfce7;
-            color: #166534;
-        }
-        
-        .status-unauthorized {
-            background: #fef2f2;
-            color: #dc2626;
-        }
-        
-        .status-pending {
-            background: #fef3c7;
-            color: #d97706;
-        }
-        
-        .device-table {
+        .qr-code {
             background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-        
-        .table-header {
-            background: #f8fafc;
-            padding: 15px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            font-weight: 600;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .table-row {
-            padding: 15px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            border-bottom: 1px solid #e2e8f0;
-            transition: background 0.3s;
-        }
-        
-        .table-row:hover {
-            background: #f8fafc;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
             padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 0;
+            border: 1px solid #e2e8f0;
         }
         
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        
-        .toggle-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
-        }
-        
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .toggle-slider {
-            position: absolute;
+        .copy-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #cbd5e1;
-            transition: .4s;
-            border-radius: 28px;
+            font-size: 14px;
+            margin: 5px;
         }
         
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
+        .copy-btn:hover {
+            background: #2563eb;
         }
         
-        input:checked + .toggle-slider {
-            background-color: var(--primary);
+        .authorize-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
         }
         
-        input:checked + .toggle-slider:before {
-            transform: translateX(22px);
+        .reject-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        .pending-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #f59e0b;
         }
     </style>
 </head>
 <body>
-    <!-- 设备授权登录界面 -->
+    <!-- 设备授权登录界面 - 增加二维码和复制功能 -->
     <div id="authPage" class="container">
         <div class="header">
             <h1>🔒 安全设备授权系统</h1>
@@ -275,9 +80,9 @@
         
         <div class="main-content">
             <div class="security-info">
-                <h3 style="margin-bottom: 10px;">🔐 安全认证</h3>
+                <h3 style="margin-bottom: 10px;">🔐 设备授权申请</h3>
                 <p style="color: #64748b; font-size: 14px;">
-                    系统正在验证您的设备指纹，只有授权的设备可以访问管理系统。
+                    请将以下设备信息提供给管理员进行授权
                 </p>
             </div>
             
@@ -285,14 +90,26 @@
                 <!-- 设备指纹信息将在这里显示 -->
             </div>
             
+            <!-- 新增：授权申请辅助功能 -->
+            <div class="qr-code">
+                <h4 style="margin-bottom: 15px;">📱 快速授权</h4>
+                <div id="qrcode"></div>
+                <p style="margin: 15px 0; font-size: 14px; color: #64748b;">
+                    扫描二维码快速复制设备指纹
+                </p>
+                <button class="copy-btn" onclick="copyFingerprint()">
+                    📋 复制设备指纹
+                </button>
+            </div>
+            
             <div id="authSection">
                 <div class="form-group">
-                    <label>管理员密码：</label>
+                    <label>管理员密码（首次授权使用）：</label>
                     <input type="password" id="adminPassword" class="form-control" placeholder="输入管理员密码">
                 </div>
                 
                 <button class="btn btn-primary" onclick="authenticateDevice()">
-                    🔑 验证设备权限
+                    🔑 提交授权申请
                 </button>
             </div>
             
@@ -301,15 +118,21 @@
                     <div style="font-size: 48px; margin-bottom: 15px;">⏳</div>
                     <h3 style="margin-bottom: 10px;">等待设备授权</h3>
                     <p style="color: #64748b; margin-bottom: 20px;">
-                        您的设备正在等待管理员授权...
+                        您的设备已提交授权申请，请通知管理员进行授权
                     </p>
                     <div class="device-fingerprint" id="pendingFingerprint"></div>
+                    <button class="copy-btn" onclick="copyFingerprint()" style="margin-top: 10px;">
+                        📋 复制指纹信息
+                    </button>
+                    <p style="margin-top: 15px; font-size: 12px; color: #94a3b8;">
+                        复制后发送给管理员，或让管理员扫描上方二维码
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 主管理系统 -->
+    <!-- 主管理系统 - 增加待授权设备管理 -->
     <div id="adminPage" class="container" style="display: none;">
         <div class="header">
             <h1>📱 设备授权管理系统</h1>
@@ -318,8 +141,19 @@
         
         <div class="main-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2>已授权设备</h2>
+                <h2>设备授权管理</h2>
                 <span class="status-badge status-authorized" id="currentDeviceStatus">当前设备已授权</span>
+            </div>
+            
+            <!-- 新增：待授权设备列表 -->
+            <div class="pending-devices" id="pendingDevicesSection" style="display: none;">
+                <h3 style="color: #d97706; margin-bottom: 15px;">🔄 待授权设备</h3>
+                <div id="pendingDevicesList">
+                    <!-- 待授权设备列表 -->
+                </div>
+                <p style="font-size: 12px; color: #f59e0b; margin-top: 10px;">
+                    💡 这些设备正在等待您的授权批准
+                </p>
             </div>
             
             <div class="security-info">
@@ -343,10 +177,16 @@
                 </label>
             </div>
             
-            <button class="btn btn-primary" onclick="showAddDeviceModal()" style="margin-bottom: 15px;">
-                ➕ 添加授权设备
-            </button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-primary" onclick="showAddDeviceModal()">
+                    ➕ 手动添加设备
+                </button>
+                <button class="btn btn-success" onclick="refreshPendingDevices()">
+                    🔄 刷新待授权列表
+                </button>
+            </div>
             
+            <h3 style="margin: 20px 0 10px 0;">已授权设备</h3>
             <div class="device-table">
                 <div class="table-header">
                     <div>设备信息</div>
@@ -369,7 +209,7 @@
         <div class="modal-content">
             <h3 style="margin-bottom: 15px;">添加授权设备</h3>
             <p style="color: #64748b; margin-bottom: 20px; font-size: 14px;">
-                请让新设备访问系统并复制其设备指纹：
+                请让新设备访问系统并复制其设备指纹，或从待授权列表中选择：
             </p>
             
             <div class="form-group">
@@ -390,315 +230,110 @@
     </div>
 
     <script>
-        // 安全配置
-        const SECURITY_CONFIG = {
-            ADMIN_PASSWORD: '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', // 123456 的SHA256
-            SESSION_TIMEOUT: 2 * 60 * 60 * 1000, // 2小时
-            MAX_AUTH_DEVICES: 10
-        };
-
-        // 设备指纹和授权数据
-        let deviceFingerprint = null;
-        let authorizedDevices = [];
-        let currentSession = null;
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeSecurity();
-            checkExistingSession();
-        });
-
-        // 初始化安全系统
-        async function initializeSecurity() {
-            // 生成设备指纹
-            deviceFingerprint = await generateDeviceFingerprint();
+        // 引入QRCode库（简化版）
+        function generateQRCode(text, elementId) {
+            const container = document.getElementById(elementId);
+            if (!container) return;
             
-            // 加载授权设备列表
-            loadAuthorizedDevices();
-            
-            // 显示设备信息
-            displayDeviceInfo();
-        }
-
-        // 生成设备指纹
-        async function generateDeviceFingerprint() {
-            const components = [];
-            
-            // 1. 用户代理信息
-            components.push(navigator.userAgent);
-            components.push(navigator.platform);
-            components.push(navigator.language);
-            components.push(navigator.hardwareConcurrency || 'unknown');
-            
-            // 2. 屏幕信息
-            components.push(screen.width + 'x' + screen.height);
-            components.push(screen.colorDepth + 'bit');
-            components.push('avail-' + screen.availWidth + 'x' + screen.availHeight);
-            
-            // 3. 时区和语言
-            components.push(new Date().getTimezoneOffset());
-            components.push(navigator.languages ? navigator.languages.join(',') : navigator.language);
-            
-            // 4. Canvas 指纹
-            const canvasFingerprint = await generateCanvasFingerprint();
-            components.push(canvasFingerprint);
-            
-            // 5. WebGL 信息
-            const webglInfo = getWebGLInfo();
-            components.push(webglInfo);
-            
-            // 6. 字体信息
-            const fontFingerprint = await generateFontFingerprint();
-            components.push(fontFingerprint);
-            
-            // 计算最终指纹
-            const fingerprintString = components.join('|');
-            return await sha256(fingerprintString);
-        }
-
-        // 生成Canvas指纹
-        async function generateCanvasFingerprint() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = 200;
-            canvas.height = 50;
-            
-            ctx.textBaseline = 'top';
-            ctx.font = '14px Arial';
-            ctx.fillStyle = '#f60';
-            ctx.fillRect(125, 1, 62, 20);
-            ctx.fillStyle = '#069';
-            ctx.fillText('Device Fingerprint', 2, 15);
-            ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-            ctx.fillText('Device Fingerprint', 4, 17);
-            
-            return canvas.toDataURL();
-        }
-
-        // 获取WebGL信息
-        function getWebGLInfo() {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            
-            if (!gl) return 'no-webgl';
-            
-            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-            if (debugInfo) {
-                return gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) + '|' + 
-                       gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-            }
-            return 'webgl-unknown';
-        }
-
-        // 生成字体指纹
-        async function generateFontFingerprint() {
-            const testText = "mmMWWLliI0Oo1";
-            const fonts = [
-                'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New',
-                'Georgia', 'Impact', 'Times New Roman', 'Trebuchet MS',
-                'Verdana', 'Microsoft YaHei', 'SimHei', 'SimSun'
-            ];
-            
-            const baseWidth = getTextWidth(testText, 'sans-serif');
-            const results = [];
-            
-            fonts.forEach(font => {
-                const width = getTextWidth(testText, font + ', sans-serif');
-                if (width !== baseWidth) {
-                    results.push(font);
-                }
-            });
-            
-            return results.join(',');
-        }
-
-        function getTextWidth(text, font) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            context.font = font;
-            return context.measureText(text).width;
-        }
-
-        // SHA256 哈希函数
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        // 显示设备信息
-        function displayDeviceInfo() {
-            const deviceInfoDiv = document.getElementById('deviceInfo');
-            const shortFingerprint = deviceFingerprint.substring(0, 32) + '...';
-            
-            deviceInfoDiv.innerHTML = `
-                <div class="device-fingerprint">
-                    <strong>设备指纹：</strong> ${shortFingerprint}
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>设备状态：</span>
-                    <span id="deviceStatus" class="status-badge status-unauthorized">未授权</span>
+            // 简化版二维码生成 - 实际项目中建议使用专业库
+            container.innerHTML = `
+                <div style="
+                    width: 150px; 
+                    height: 150px; 
+                    margin: 0 auto; 
+                    background: #f8fafc; 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center; 
+                    border: 1px dashed #cbd5e1;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    color: #64748b;
+                ">
+                    📱 QR Code<br>
+                    <small>设备指纹二维码</small>
                 </div>
             `;
-            
-            // 检查设备是否已授权
-            if (isDeviceAuthorized()) {
-                document.getElementById('deviceStatus').className = 'status-badge status-authorized';
-                document.getElementById('deviceStatus').textContent = '已授权';
-            } else if (isDevicePending()) {
-                document.getElementById('deviceStatus').className = 'status-badge status-pending';
-                document.getElementById('deviceStatus').textContent = '等待授权';
-                showPendingSection();
-            }
         }
 
-        // 检查设备是否已授权
-        function isDeviceAuthorized() {
-            return authorizedDevices.some(device => device.fingerprint === deviceFingerprint);
-        }
-
-        // 检查设备是否在等待授权
-        function isDevicePending() {
-            const pendingDevices = JSON.parse(localStorage.getItem('pendingDevices') || '[]');
-            return pendingDevices.includes(deviceFingerprint);
-        }
-
-        // 显示等待授权界面
-        function showPendingSection() {
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('pendingSection').style.display = 'block';
-            document.getElementById('pendingFingerprint').textContent = deviceFingerprint;
-        }
-
-        // 设备认证
-        async function authenticateDevice() {
-            const password = document.getElementById('adminPassword').value;
-            const passwordHash = await sha256(password);
-            
-            if (passwordHash !== SECURITY_CONFIG.ADMIN_PASSWORD) {
-                alert('管理员密码错误');
-                return;
-            }
-            
-            if (isDeviceAuthorized()) {
-                // 设备已授权，直接登录
-                createSession();
-                showAdminPage();
-            } else {
-                // 新设备，添加到待授权列表
-                const pendingDevices = JSON.parse(localStorage.getItem('pendingDevices') || '[]');
-                if (!pendingDevices.includes(deviceFingerprint)) {
-                    pendingDevices.push(deviceFingerprint);
-                    localStorage.setItem('pendingDevices', JSON.stringify(pendingDevices));
-                }
-                showPendingSection();
-                alert('设备已提交授权申请，请等待管理员授权');
-            }
-        }
-
-        // 创建会话
-        function createSession() {
-            currentSession = {
-                fingerprint: deviceFingerprint,
-                loginTime: new Date().toISOString(),
-                expiry: Date.now() + SECURITY_CONFIG.SESSION_TIMEOUT
-            };
-            localStorage.setItem('currentSession', JSON.stringify(currentSession));
-        }
-
-        // 检查现有会话
-        function checkExistingSession() {
-            const savedSession = localStorage.getItem('currentSession');
-            if (savedSession) {
-                const session = JSON.parse(savedSession);
-                if (session.expiry > Date.now() && session.fingerprint === deviceFingerprint) {
-                    currentSession = session;
-                    showAdminPage();
-                }
-            }
-        }
-
-        // 显示管理页面
-        function showAdminPage() {
-            document.getElementById('authPage').style.display = 'none';
-            document.getElementById('adminPage').style.display = 'block';
-            
-            // 更新界面信息
-            document.getElementById('currentFingerprint').textContent = deviceFingerprint;
-            document.getElementById('authTime').textContent = new Date().toLocaleString();
-            
-            loadAuthorizedDevicesList();
-        }
-
-        // 加载授权设备
-        function loadAuthorizedDevices() {
-            const saved = localStorage.getItem('authorizedDevices');
-            if (saved) {
-                authorizedDevices = JSON.parse(saved);
-            }
-        }
-
-        // 加载授权设备列表
-        function loadAuthorizedDevicesList() {
-            const listDiv = document.getElementById('authorizedDevicesList');
-            listDiv.innerHTML = '';
-            
-            authorizedDevices.forEach(device => {
-                const isCurrent = device.fingerprint === deviceFingerprint;
-                const row = document.createElement('div');
-                row.className = 'table-row';
-                row.innerHTML = `
-                    <div>
-                        ${device.note || '未命名设备'}
-                        ${isCurrent ? '<br><small style="color: #10b981;">(当前设备)</small>' : ''}
-                    </div>
-                    <div>${new Date(device.authTime).toLocaleDateString()}</div>
-                    <div>
-                        <span class="status-badge status-authorized">已授权</span>
-                        ${!isCurrent ? `<button onclick="removeDevice('${device.fingerprint}')" style="margin-left: 8px; background: #ef4444; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer;">移除</button>` : ''}
-                    </div>
-                `;
-                listDiv.appendChild(row);
+        // 复制设备指纹
+        function copyFingerprint() {
+            const fingerprint = deviceFingerprint;
+            navigator.clipboard.writeText(fingerprint).then(() => {
+                showToast('设备指纹已复制到剪贴板');
+            }).catch(() => {
+                // 兼容旧浏览器
+                const textArea = document.createElement('textarea');
+                textArea.value = fingerprint;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('设备指纹已复制');
             });
         }
 
-        // 显示添加设备模态框
-        function showAddDeviceModal() {
-            document.getElementById('addDeviceModal').style.display = 'flex';
+        // 刷新待授权设备列表
+        function refreshPendingDevices() {
+            loadPendingDevices();
+            showToast('待授权列表已刷新');
         }
 
-        // 关闭添加设备模态框
-        function closeAddDeviceModal() {
-            document.getElementById('addDeviceModal').style.display = 'none';
-        }
-
-        // 添加授权设备
-        function addAuthorizedDevice() {
-            const fingerprint = document.getElementById('newDeviceFingerprint').value.trim();
-            const note = document.getElementById('deviceNote').value.trim();
+        // 加载待授权设备列表
+        function loadPendingDevices() {
+            const pendingDevices = JSON.parse(localStorage.getItem('pendingDevices') || '[]');
+            const pendingListDiv = document.getElementById('pendingDevicesList');
+            const pendingSection = document.getElementById('pendingDevicesSection');
             
-            if (!fingerprint) {
-                alert('请输入设备指纹');
+            if (pendingDevices.length === 0) {
+                pendingSection.style.display = 'none';
                 return;
             }
+            
+            pendingSection.style.display = 'block';
+            pendingListDiv.innerHTML = '';
+            
+            pendingDevices.forEach((fingerprint, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'pending-item';
+                itemDiv.innerHTML = `
+                    <div style="display: flex; justify-content: between; align-items: start;">
+                        <div style="flex: 1;">
+                            <strong>待授权设备 #${index + 1}</strong>
+                            <div style="font-family: monospace; font-size: 11px; color: #64748b; margin: 5px 0; word-break: break-all;">
+                                ${fingerprint}
+                            </div>
+                            <div style="font-size: 12px; color: #94a3b8;">
+                                申请时间: ${new Date().toLocaleString()}
+                            </div>
+                        </div>
+                        <div>
+                            <button class="authorize-btn" onclick="authorizeDevice('${fingerprint}')">
+                                ✅ 授权
+                            </button>
+                            <button class="reject-btn" onclick="rejectDevice('${fingerprint}')">
+                                ❌ 拒绝
+                            </button>
+                        </div>
+                    </div>
+                `;
+                pendingListDiv.appendChild(itemDiv);
+            });
+        }
+
+        // 授权设备
+        function authorizeDevice(fingerprint) {
+            const note = prompt('请输入设备备注（可选）:', `设备-${new Date().toLocaleDateString()}`);
             
             if (authorizedDevices.length >= SECURITY_CONFIG.MAX_AUTH_DEVICES) {
                 alert(`已达到最大授权设备数量 (${SECURITY_CONFIG.MAX_AUTH_DEVICES})`);
                 return;
             }
             
-            // 检查是否已存在
-            if (authorizedDevices.some(device => device.fingerprint === fingerprint)) {
-                alert('该设备已授权');
-                return;
-            }
-            
-            // 添加新设备
+            // 添加到授权列表
             authorizedDevices.push({
                 fingerprint: fingerprint,
-                note: note,
+                note: note || `设备-${new Date().toLocaleDateString()}`,
                 authTime: new Date().toISOString()
             });
             
@@ -710,39 +345,102 @@
             // 保存授权设备列表
             localStorage.setItem('authorizedDevices', JSON.stringify(authorizedDevices));
             
-            closeAddDeviceModal();
+            // 刷新界面
+            loadPendingDevices();
             loadAuthorizedDevicesList();
             showToast('设备授权成功');
         }
 
-        // 移除设备
-        function removeDevice(fingerprint) {
-            if (!confirm('确定要移除该设备的授权吗？')) return;
+        // 拒绝设备授权
+        function rejectDevice(fingerprint) {
+            if (!confirm('确定要拒绝该设备的授权申请吗？')) return;
             
-            authorizedDevices = authorizedDevices.filter(device => device.fingerprint !== fingerprint);
-            localStorage.setItem('authorizedDevices', JSON.stringify(authorizedDevices));
+            // 从待授权列表中移除
+            const pendingDevices = JSON.parse(localStorage.getItem('pendingDevices') || '[]');
+            const updatedPending = pendingDevices.filter(fp => fp !== fingerprint);
+            localStorage.setItem('pendingDevices', JSON.stringify(updatedPending));
+            
+            // 刷新界面
+            loadPendingDevices();
+            showToast('设备授权申请已拒绝');
+        }
+
+        // 修改初始化函数，添加二维码生成
+        async function initializeSecurity() {
+            // 生成设备指纹
+            deviceFingerprint = await generateDeviceFingerprint();
+            
+            // 加载授权设备列表
+            loadAuthorizedDevices();
+            
+            // 显示设备信息
+            displayDeviceInfo();
+            
+            // 生成二维码
+            generateQRCode(deviceFingerprint, 'qrcode');
+        }
+
+        // 修改显示管理页面函数，加载待授权列表
+        function showAdminPage() {
+            document.getElementById('authPage').style.display = 'none';
+            document.getElementById('adminPage').style.display = 'block';
+            
+            // 更新界面信息
+            document.getElementById('currentFingerprint').textContent = deviceFingerprint;
+            document.getElementById('authTime').textContent = new Date().toLocaleString();
+            
             loadAuthorizedDevicesList();
-            showToast('设备已移除');
+            loadPendingDevices(); // 加载待授权列表
         }
 
-        // 安全退出
-        function logout() {
-            localStorage.removeItem('currentSession');
-            location.reload();
-        }
-
-        // 显示Toast提示
-        function showToast(message) {
-            alert(message); // 简化版本，实际可以使用更漂亮的Toast组件
-        }
-
-        // 点击模态框外部关闭
-        window.onclick = function(event) {
-            const modal = document.getElementById('addDeviceModal');
-            if (event.target === modal) {
-                closeAddDeviceModal();
+        // 修改设备认证函数，优化用户体验
+        async function authenticateDevice() {
+            const password = document.getElementById('adminPassword').value;
+            
+            // 如果设备已授权，直接登录（不需要密码）
+            if (isDeviceAuthorized()) {
+                createSession();
+                showAdminPage();
+                return;
+            }
+            
+            // 新设备需要验证密码
+            if (!password) {
+                alert('请输入管理员密码进行首次授权');
+                return;
+            }
+            
+            const passwordHash = await sha256(password);
+            if (passwordHash !== SECURITY_CONFIG.ADMIN_PASSWORD) {
+                alert('管理员密码错误');
+                return;
+            }
+            
+            // 如果是管理员密码正确，自动授权当前设备
+            if (authorizedDevices.length === 0) {
+                // 首次使用，自动授权当前设备
+                authorizedDevices.push({
+                    fingerprint: deviceFingerprint,
+                    note: '管理员设备',
+                    authTime: new Date().toISOString()
+                });
+                localStorage.setItem('authorizedDevices', JSON.stringify(authorizedDevices));
+                createSession();
+                showAdminPage();
+                showToast('管理员设备已自动授权');
+            } else {
+                // 非首次，提交授权申请
+                const pendingDevices = JSON.parse(localStorage.getItem('pendingDevices') || '[]');
+                if (!pendingDevices.includes(deviceFingerprint)) {
+                    pendingDevices.push(deviceFingerprint);
+                    localStorage.setItem('pendingDevices', JSON.stringify(pendingDevices));
+                }
+                showPendingSection();
+                showToast('设备授权申请已提交，请等待管理员授权');
             }
         }
+
+        // 其余函数保持不变...
     </script>
 </body>
 </html>

@@ -105,51 +105,6 @@
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
         
-        .device-type-selector {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .device-option {
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            padding: 12px 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .device-option:hover {
-            border-color: var(--primary);
-        }
-        
-        .device-option.selected {
-            border-color: var(--primary);
-            background: #f8f9ff;
-        }
-        
-        .device-icon {
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-        
-        .device-name {
-            font-weight: 600;
-            font-size: 12px;
-        }
-        
-        .help-tip {
-            background: #f0f7ff;
-            border-radius: 8px;
-            padding: 12px 15px;
-            font-size: 14px;
-            color: #555;
-            margin-top: 10px;
-            display: none;
-        }
-        
         .package-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -178,18 +133,21 @@
         
         .package-option.popular {
             border-color: var(--warning);
+            background: linear-gradient(135deg, #fffaf0 0%, #fff5e6 100%);
         }
         
         .popular-badge {
             position: absolute;
             top: -10px;
-            right: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--warning);
             color: white;
-            padding: 4px 8px;
+            padding: 4px 12px;
             border-radius: 12px;
             font-size: 10px;
             font-weight: 600;
+            white-space: nowrap;
         }
         
         .package-name {
@@ -434,6 +392,16 @@
             border-radius: 4px;
             font-family: monospace;
         }
+        
+        .help-tip {
+            background: #f0f7ff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -453,24 +421,18 @@
                 <!-- 设备类型选择 -->
                 <div class="form-group">
                     <label>设备类型：</label>
-                    <div class="device-type-selector">
-                        <div class="device-option selected" onclick="selectDeviceType('tv')">
-                            <div class="device-icon">📺</div>
-                            <div class="device-name">电视</div>
-                        </div>
-                        <div class="device-option" onclick="selectDeviceType('phone')">
-                            <div class="device-icon">📱</div>
-                            <div class="device-name">手机</div>
-                        </div>
-                        <div class="device-option" onclick="selectDeviceType('tablet')">
-                            <div class="device-icon">📦</div>
-                            <div class="device-name">平板</div>
-                        </div>
-                        <div class="device-option" onclick="selectDeviceType('box')">
-                            <div class="device-icon">🖥️</div>
-                            <div class="device-name">盒子</div>
-                        </div>
-                    </div>
+                    <select class="form-control" id="deviceType" onchange="selectDeviceType(this.value)">
+                        <option value="tv">📺 电视</option>
+                        <option value="phone">📱 手机</option>
+                        <option value="tablet">📦 平板</option>
+                        <option value="box">🖥️ 电视盒子</option>
+                    </select>
+                </div>
+                
+                <!-- 联系方式 -->
+                <div class="form-group">
+                    <label for="contact">联系方式：</label>
+                    <input type="text" id="contact" class="form-control" placeholder="手机号或微信号">
                 </div>
                 
                 <!-- 设备ID输入 -->
@@ -485,12 +447,6 @@
                     </div>
                 </div>
                 
-                <!-- 联系方式 -->
-                <div class="form-group">
-                    <label for="contact">联系方式：</label>
-                    <input type="text" id="contact" class="form-control" placeholder="手机号或微信号">
-                </div>
-                
                 <button class="btn btn-secondary" onclick="checkDeviceStatus()">
                     查询设备状态
                 </button>
@@ -502,20 +458,20 @@
                     <i>💰</i> 套餐选择
                 </div>
                 <div class="package-selector">
-                    <div class="package-option" onclick="selectPackage('trial')">
-                        <div class="package-name">体验卡</div>
-                        <div class="package-price">免费</div>
-                        <div class="package-period">7天体验</div>
-                    </div>
-                    
                     <div class="package-option" onclick="selectPackage('monthly')">
                         <div class="package-name">月卡</div>
                         <div class="package-price">¥29</div>
                         <div class="package-period">30天授权</div>
                     </div>
                     
-                    <div class="package-option popular selected" onclick="selectPackage('yearly')">
-                        <div class="popular-badge">热门</div>
+                    <div class="package-option popular selected" onclick="selectPackage('quarterly')">
+                        <div class="popular-badge">🔥 热门推荐</div>
+                        <div class="package-name">季卡</div>
+                        <div class="package-price">¥79</div>
+                        <div class="package-period">90天授权</div>
+                    </div>
+                    
+                    <div class="package-option" onclick="selectPackage('yearly')">
                         <div class="package-name">年卡</div>
                         <div class="package-price">¥299</div>
                         <div class="package-period">365天授权</div>
@@ -564,7 +520,7 @@
             <div class="form-group">
                 <label>套餐：</label>
                 <div class="form-control" style="background: #f8f9fa;" id="confirmPackage">
-                    年卡 - ¥299
+                    季卡 - ¥79
                 </div>
             </div>
             
@@ -602,7 +558,7 @@
 
     <script>
         // 全局变量
-        let selectedPackage = 'yearly';
+        let selectedPackage = 'quarterly';
         let selectedDeviceType = 'tv';
         let selectedPayment = 'wechat';
         let orders = [];
@@ -669,14 +625,6 @@
         // 选择设备类型
         function selectDeviceType(deviceType) {
             selectedDeviceType = deviceType;
-            
-            // 更新UI
-            document.querySelectorAll('.device-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
-            
-            // 更新帮助信息
             updateDeviceHelp();
         }
         
@@ -921,12 +869,12 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
         // 获取套餐信息
         function getPackageInfo(packageType) {
             const packages = {
-                'trial': { name: '体验卡', price: 0 },
                 'monthly': { name: '月卡', price: 29 },
+                'quarterly': { name: '季卡', price: 79 },
                 'yearly': { name: '年卡', price: 299 }
             };
             
-            return packages[packageType] || packages['yearly'];
+            return packages[packageType] || packages['quarterly'];
         }
         
         // 模拟获取设备数据
@@ -940,9 +888,9 @@ ${!isExpired ? `剩余天数：${daysRemaining}天` : '状态：已过期'}
                                 device_id: "1234567890",
                                 owner: "张三",
                                 contact: "13800138000",
-                                package: "年卡",
+                                package: "季卡",
                                 activate_date: "2024-01-01",
-                                expire_date: "2024-12-31"
+                                expire_date: "2024-04-01"
                             },
                             {
                                 device_id: "0987654321",

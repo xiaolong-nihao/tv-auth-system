@@ -15,7 +15,7 @@
     // 检查设备授权
     async function checkAuthorization(deviceId) {
         try {
-            const response = await fetch('https://cdn.jsdelivr.net/gh/YOUR_GITHUB_USERNAME/tv-auth-system/auth-list.json?t=' + Date.now());
+            const response = await fetch('https://cdn.jsdelivr.net/gh/xiaolong-nihao/tv-auth-system/auth-list.json?t=' + Date.now());
             const authData = await response.json();
             return authData.authorized_devices.includes(deviceId);
         } catch (error) {
@@ -34,7 +34,7 @@
         
         if (isAuthorized) {
             // 已授权 - 重定向到完整接口
-            window.location.href = 'https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/tv-box/main/cangku.json?device_id=' + encodeURIComponent(deviceId);
+            window.location.href = 'https://raw.githubusercontent.com/xiaolong-nihao/tv-box/main/cangku.json?device_id=' + encodeURIComponent(deviceId);
         } else {
             // 未授权 - 重定向到受限接口
             window.location.href = 'https://gitee.com/yanglong1251/tv-box/raw/master/cangku.json?device_id=' + encodeURIComponent(deviceId);

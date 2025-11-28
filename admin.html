@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TV设备授权管理</title>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; border-bottom: 2px solid #007cba; padding-bottom: 10px; }
+        .device-item { padding: 12px; border: 1px solid #ddd; margin: 8px 0; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; background: #fafafa; }
+        .device-id { font-family: 'Courier New', monospace; background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 14px; }
+        button { padding: 8px 16px; margin: 0 5px; cursor: pointer; border: none; border-radius: 4px; font-size: 14px; transition: background 0.3s; }
+        .add-btn { background: #28a745; color: white; }
+        .add-btn:hover { background: #218838; }
+        .remove-btn { background: #dc3545; color: white; }
+        .remove-btn:hover { background: #c82333; }
+        .copy-btn { background: #007cba; color: white; }
+        .copy-btn:hover { background: #0056b3; }
+        .refresh-btn { background: #6c757d; color: white; }
+        .refresh-btn:hover { background: #545b62; }
+        .add-form { background: #e7f3ff; padding: 20px; margin: 20px 0; border-radius: 6px; border-left: 4px solid #007cba; }
+        input[type="text"] { padding: 10px; width: 400px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; margin-right: 10px; }
+        .stats { background: #fff3cd; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #ffc107; }
+        .instructions { background: #d1ecf1; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #17a2b8; }
+        .loading { text-align: center; padding: 20px; color: #666; }
+        .error { color: red; padding: 10px; background: #fee; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 TV设备授权管理系统</h1>
+        
+        <div class="stats">
+            <h3>📊 系统状态</h3>
+            <p>已授权设备: <strong id="deviceCount">0</strong> 台</p>
+            <p>最后更新: <span id="lastUpdate">-</span></p>
+            <button class="refresh-btn" onclick="loadDevices()">🔄 刷新列表</button>
+        </div>
+
+        <div class="add-form">
+            <h3>➕ 添加新设备</h3>
+            <input type="text" id="newDeviceId" placeholder="输入设备ID，如：TV_1700000000000_abc123">
+            <button class="add-btn" onclick="addDevice()">添加授权</button>
+            <button class="copy-btn" onclick="generateDeviceId()">生成设备ID</button>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 使用说明</h3>
+            <p>1. 用户打开TV软件，在界面中找到设备ID</p>
+            <p>2. 将设备ID在此页面添加授权</p>
+            <p>3. 用户重启TV软件即可看到完整内容</p>
+            <p>4. 可随时删除设备授权</p>
+            <p><strong>注意：</strong>添加/删除设备需要在GitHub页面手动编辑文件</p>
+        </div>
+
+        <div>
+            <h3>📋 已授权设备列表</h3>
+            <div id="deviceList" class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <script>
+        // 🔧 配置区：替换为你的GitHub用户名
+        const GITHUB_USERNAME = 'YOUR_GITHUB_USERNAME';
+        const AUTH_URL = `https://cdn.jsdelivr.net/gh/${GITHUB_USERNAME}/tv-auth-system/auth-list.json`;
+        
+        // 加载设备列表
+        async function loadDevices() {
+            try {
+                document.getElementById('deviceList').innerHTML = '<div class="loading">加载中...</div>';
+                
+                const response = await fetch(AUTH_URL + '?t=' + Date.now());
+                if (!response.ok) {
+                    throw new Error('网络请求失败: ' + response.status);
+                }
+                const data = await response.json();
+                
+                displayDevices(data.authorized_devices);
+                updateStats(data);
+                
+            } catch (error) {
+                document.getElementById('deviceList').innerHTML = 
+                    '<div class="error">加载失败: ' + error.message + '</div>';
+                console.error('加载错误:', error);
+            }
+        }
+        
+        // 显示设备列表
+        function displayDevices(devices) {
+            const deviceList = document.getElementById('deviceList');
+            
+            if (devices.length === 0) {
+                deviceList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">暂无授权设备</div>';
+                return;
+            }
+            
+            deviceList.innerHTML = devices.map(device => `
+                <div class="device-item">
+                    <span class="device-id">${device}</span>
+                    <div>
+                        <button class="copy-btn" onclick="copyDeviceId('${device}')">复制</button>
+                        <button class="remove-btn" onclick="removeDevice('${device}')">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 更新统计信息
+        function updateStats(data) {
+            document.getElementById('deviceCount').textContent = data.authorized_devices.length;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+        }
+        
+        // 添加设备
+        function addDevice() {
+            const deviceId = document.getElementById('newDeviceId').value.trim();
+            if (!deviceId) {
+                alert('请输入设备ID');
+                return;
+            }
+            
+            if (!validateDeviceId(deviceId)) {
+                alert('设备ID格式不正确！\n正确格式：TV_时间戳_随机字符\n示例：TV_1700000000000_abc123def');
+                return;
+            }
+            
+            const editUrl = `https://github.com/${GITHUB_USERNAME}/tv-auth-system/edit/main/auth-list.json`;
+            
+            const message = `请手动添加设备授权：\n\n1. 点击确定后打开GitHub编辑页面\n2. 在 "authorized_devices" 数组中添加: "${deviceId}"\n3. 滚动到底部，点击 "Commit changes" 提交\n\n设备ID: ${deviceId}`;
+            
+            if (confirm(message)) {
+                window.open(editUrl, '_blank');
+            }
+            
+            // 清空输入框
+            document.getElementById('newDeviceId').value = '';
+        }
+        
+        // 删除设备
+        function removeDevice(deviceId) {
+            if (!confirm(`确定要删除设备授权吗？\n\n设备ID: ${deviceId}`)) {
+                return;
+            }
+            
+            const editUrl = `https://github.com/${GITHUB_USERNAME}/tv-auth-system/edit/main/auth-list.json`;
+            const message = `请手动删除设备授权：\n\n1. 点击确定后打开GitHub编辑页面\n2. 从 "authorized_devices" 数组中删除: "${deviceId}"\n3. 滚动到底部，点击 "Commit changes" 提交`;
+            
+            alert(message);
+            window.open(editUrl, '_blank');
+        }
+        
+        // 生成设备ID
+        function generateDeviceId() {
+            const deviceId = 'TV_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+            document.getElementById('newDeviceId').value = deviceId;
+            document.getElementById('newDeviceId').select();
+        }
+        
+        // 复制设备ID
+        function copyDeviceId(deviceId) {
+            navigator.clipboard.writeText(deviceId).then(() => {
+                alert('已复制设备ID: ' + deviceId);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动复制');
+            });
+        }
+        
+        // 验证设备ID格式
+        function validateDeviceId(deviceId) {
+            const pattern = /^TV_\d+_[a-zA-Z0-9]{8}$/;
+            return pattern.test(deviceId);
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDevices();
+            // 每30秒自动刷新
+            setInterval(loadDevices, 30000);
+        });
+    </script>
+</body>
+</html>

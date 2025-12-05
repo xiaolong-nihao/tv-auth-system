@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>电视激活码推送</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+        
+        .container { max-width: 500px; margin: 0 auto; background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { color: #1890ff; margin-bottom: 10px; }
+        .header p { color: #666; }
+        
+        .info-card { background: #f8f9fa; border-radius: 10px; padding: 20px; margin-bottom: 20px; border-left: 4px solid #1890ff; }
+        .info-item { display: flex; margin-bottom: 10px; }
+        .info-label { width: 100px; color: #666; }
+        .info-value { flex: 1; color: #333; font-weight: bold; }
+        
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        .input-group input, .input-group textarea { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #e8e8e8; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            transition: border-color 0.3s; 
+        }
+        .input-group input:focus, .input-group textarea:focus { 
+            border-color: #1890ff; 
+            outline: none; 
+        }
+        
+        .btn { 
+            display: block; 
+            width: 100%; 
+            padding: 18px; 
+            background: linear-gradient(135deg, #1890ff, #096dd9); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 18px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin: 15px 0; 
+            text-align: center;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn.secondary { background: linear-gradient(135deg, #52c41a, #389e0d); }
+        .btn.warning { background: linear-gradient(135deg, #faad14, #d48806); }
+        
+        .result { 
+            margin-top: 20px; 
+            padding: 15px; 
+            border-radius: 8px; 
+            display: none; 
+        }
+        .success { background: #f6ffed; border: 1px solid #b7eb8f; color: #52c41a; }
+        .error { background: #fff2f0; border: 1px solid #ffccc7; color: #ff4d4f; }
+        .info { background: #e6f7ff; border: 1px solid #91d5ff; color: #1890ff; }
+        
+        .loading { text-align: center; padding: 30px; display: none; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #1890ff; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .tips { 
+            background: #fff7e6; 
+            border: 1px solid #ffd591; 
+            border-radius: 8px; 
+            padding: 15px; 
+            margin-top: 20px; 
+            color: #d46b08; 
+            font-size: 14px; 
+        }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📺 电视激活码推送</h1>
+            <p>扫码后自动进入此页面，输入激活码一键推送</p>
+        </div>
+        
+        <div class="info-card">
+            <h3>设备信息</h3>
+            <div class="info-item">
+                <div class="info-label">电视IP:</div>
+                <div class="info-value" id="tv-ip">正在获取...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">会话ID:</div>
+                <div class="info-value" id="session-id">正在获取...</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">状态:</div>
+                <div class="info-value" id="status">
+                    <span style="color: #faad14;">等待连接...</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label for="activation-code">激活码</label>
+            <textarea 
+                id="activation-code" 
+                rows="4" 
+                placeholder="请粘贴你的长激活码（从激活码生成工具复制）"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false">
+            </textarea>
+            <div style="margin-top: 10px; font-size: 14px; color: #666;">
+                提示：激活码通常为16-32位的字母数字组合
+            </div>
+        </div>
+        
+        <button class="btn" onclick="sendActivation()" id="send-btn">
+            🚀 推送激活码到电视
+        </button>
+        
+        <button class="btn secondary" onclick="testConnection()">
+            🔍 测试电视连接
+        </button>
+        
+        <div id="result" class="result"></div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p id="loading-text">处理中...</p>
+        </div>
+        
+        <div class="tips">
+            <strong>💡 使用提示：</strong>
+            <p>1. 确保手机和电视在同一WiFi网络</p>
+            <p>2. 电视需保持激活界面开启</p>
+            <p>3. 激活码只使用一次，发送后请勿重复</p>
+        </div>
+    </div>
+
+    <script>
+        // 解析URL参数
+        function getUrlParams() {
+            const params = {};
+            const query = window.location.search.substring(1);
+            const pairs = query.split('&');
+            
+            for (let pair of pairs) {
+                const [key, value] = pair.split('=');
+                if (key && value) {
+                    params[decodeURIComponent(key)] = decodeURIComponent(value);
+                }
+            }
+            return params;
+        }
+        
+        // 显示结果
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = message;
+            resultDiv.className = 'result ' + type;
+            resultDiv.style.display = 'block';
+            
+            // 5秒后自动隐藏
+            setTimeout(() => {
+                resultDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // 显示加载
+        function showLoading(text) {
+            document.getElementById('loading-text').textContent = text;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('send-btn').disabled = true;
+        }
+        
+        // 隐藏加载
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('send-btn').disabled = false;
+        }
+        
+        // 更新状态
+        function updateStatus(message, color) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<span style="color: ${color};">${message}</span>`;
+        }
+        
+        // 主逻辑
+        function main() {
+            const params = getUrlParams();
+            let sessionId = params.session || '';
+            let tvIp = params.ip || '';
+            
+            // 如果参数中没有，尝试从二维码内容解析
+            if (!sessionId && !tvIp) {
+                // 尝试解析当前URL的hash部分
+                const hash = window.location.hash.substring(1);
+                if (hash) {
+                    const parts = hash.split(':');
+                    if (parts.length >= 2) {
+                        sessionId = parts[0];
+                        tvIp = '255.255.255.255'; // 广播地址
+                    }
+                }
+            }
+            
+            // 显示设备信息
+            document.getElementById('session-id').textContent = sessionId || '未识别';
+            document.getElementById('tv-ip').textContent = tvIp || '广播模式';
+            
+            // 自动测试连接
+            if (sessionId) {
+                testConnection();
+            }
+            
+            // 激活码输入框自动聚焦
+            document.getElementById('activation-code').focus();
+            
+            // 监听粘贴事件
+            document.getElementById('activation-code').addEventListener('paste', function(e) {
+                setTimeout(() => {
+                    validateActivationCode();
+                }, 100);
+            });
+            
+            // 监听输入事件
+            document.getElementById('activation-code').addEventListener('input', validateActivationCode);
+        }
+        
+        // 验证激活码格式
+        function validateActivationCode() {
+            const code = document.getElementById('activation-code').value.trim();
+            
+            if (!code) {
+                return false;
+            }
+            
+            // 简单的格式验证
+            if (code.length < 8) {
+                showResult('激活码长度不足', 'error');
+                return false;
+            }
+            
+            if (!/^[A-Za-z0-9]+$/.test(code)) {
+                showResult('激活码只能包含字母和数字', 'error');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 测试电视连接
+        async function testConnection() {
+            showLoading('正在测试电视连接...');
+            updateStatus('测试连接中...', '#faad14');
+            
+            try {
+                const sessionId = document.getElementById('session-id').textContent;
+                
+                // 尝试发送测试数据
+                const result = await sendUdpData(sessionId + ':TEST', '255.255.255.255', 8888);
+                
+                if (result.success) {
+                    updateStatus('电视在线 ✓', '#52c41a');
+                    showResult('电视连接正常，可以发送激活码', 'success');
+                } else {
+                    updateStatus('电视可能不在线', '#ff4d4f');
+                    showResult('无法连接到电视，请确保电视已打开激活界面', 'error');
+                }
+                
+            } catch (error) {
+                updateStatus('连接失败', '#ff4d4f');
+                showResult('测试连接失败：' + error.message, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // 发送激活码
+        async function sendActivation() {
+            if (!validateActivationCode()) {
+                showResult('请先输入有效的激活码', 'error');
+                return;
+            }
+            
+            const sessionId = document.getElementById('session-id').textContent;
+            const activationCode = document.getElementById('activation-code').value.trim();
+            const tvIp = document.getElementById('tv-ip').textContent;
+            
+            showLoading('正在发送激活码...');
+            
+            try {
+                // 构造发送数据：SESSION_ID:ACTIVATION_CODE
+                const data = sessionId + ':' + activationCode;
+                
+                // 发送UDP数据
+                const result = await sendUdpData(data, tvIp, 8888);
+                
+                if (result.success) {
+                    showResult('✅ 激活码发送成功！<br>电视正在验证，请查看电视屏幕...', 'success');
+                    updateStatus('激活码已发送 ✓', '#52c41a');
+                    
+                    // 清空输入框
+                    document.getElementById('activation-code').value = '';
+                    
+                    // 3秒后跳转
+                    setTimeout(() => {
+                        window.location.href = 'about:blank';
+                    }, 3000);
+                    
+                } else {
+                    showResult('❌ 发送失败：' + result.message, 'error');
+                    updateStatus('发送失败', '#ff4d4f');
+                }
+                
+            } catch (error) {
+                showResult('发送错误：' + error.message, 'error');
+                updateStatus('发送错误', '#ff4d4f');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // 发送UDP数据的函数
+        function sendUdpData(data, ip, port) {
+            return new Promise((resolve) => {
+                try {
+                    // 方法1：使用WebRTC数据通道（现代浏览器）
+                    if (typeof RTCPeerConnection !== 'undefined') {
+                        sendViaWebRTC(data, ip, port).then(resolve);
+                        return;
+                    }
+                    
+                    // 方法2：使用WebSocket代理
+                    sendViaWebSocket(data, ip, port).then(resolve);
+                    
+                } catch (error) {
+                    resolve({ success: false, message: error.message });
+                }
+            });
+        }
+        
+        // 通过WebRTC发送
+        async function sendViaWebRTC(data, ip, port) {
+            return new Promise((resolve) => {
+                const pc = new RTCPeerConnection();
+                const dc = pc.createDataChannel('activation');
+                
+                dc.onopen = () => {
+                    dc.send(data);
+                    resolve({ success: true });
+                    pc.close();
+                };
+                
+                dc.onerror = () => {
+                    resolve({ success: false, message: 'WebRTC连接失败' });
+                };
+                
+                setTimeout(() => {
+                    resolve({ success: false, message: '连接超时' });
+                }, 3000);
+            });
+        }
+        
+        // 通过WebSocket发送
+        async function sendViaWebSocket(data, ip, port) {
+            return new Promise((resolve) => {
+                try {
+                    // 尝试连接电视的WebSocket
+                    const ws = new WebSocket(`ws://${ip}:${port + 1}`);
+                    
+                    ws.onopen = () => {
+                        ws.send(data);
+                        resolve({ success: true });
+                        ws.close();
+                    };
+                    
+                    ws.onerror = () => {
+                        // WebSocket失败，尝试HTTP
+                        sendViaHttp(data, ip, port).then(resolve);
+                    };
+                    
+                    setTimeout(() => {
+                        resolve({ success: false, message: '连接超时' });
+                    }, 3000);
+                    
+                } catch (error) {
+                    resolve({ success: false, message: error.message });
+                }
+            });
+        }
+        
+        // 通过HTTP发送
+        async function sendViaHttp(data, ip, port) {
+            try {
+                // 使用fetch发送
+                const response = await fetch(`http://${ip}:${port}/activate`, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: data
+                });
+                
+                return { success: true };
+            } catch (error) {
+                // 最后的方案：使用图片加载触发请求
+                const img = new Image();
+                img.src = `http://${ip}:${port}/activate?data=${encodeURIComponent(data)}`;
+                
+                return new Promise((resolve) => {
+                    img.onload = () => resolve({ success: true });
+                    img.onerror = () => resolve({ success: false, message: '所有发送方式都失败' });
+                });
+            }
+        }
+        
+        // 页面加载完成后运行
+        document.addEventListener('DOMContentLoaded', main);
+    </script>
+</body>
+</html>

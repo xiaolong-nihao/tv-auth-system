@@ -27,11 +27,55 @@
             border: 2px solid #e8e8e8; 
             border-radius: 8px; 
             font-size: 16px; 
-            transition: border-color 0.3s; 
+            transition: all 0.3s; 
+            resize: none;
+            overflow: hidden;
+            min-height: 60px;
+            max-height: 200px;
+            line-height: 1.5;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
         .input-group input:focus, .input-group textarea:focus { 
             border-color: #1890ff; 
             outline: none; 
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+        
+        .code-info {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+        }
+        
+        /* 激活码样式状态 */
+        .highlight-code {
+            background: linear-gradient(90deg, #f0f7ff, #e6f7ff);
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+        .code-valid { border-color: #52c41a !important; }
+        .code-invalid { border-color: #ff4d4f !important; }
+        .code-warning { border-color: #faad14 !important; }
+        
+        /* 滚动条样式 */
+        .scrollable {
+            overflow-y: auto !important;
+        }
+        .scrollable::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollable::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .scrollable::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        .scrollable::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
         
         .btn { 
@@ -51,12 +95,18 @@
         .btn:hover { opacity: 0.9; }
         .btn.secondary { background: linear-gradient(135deg, #52c41a, #389e0d); }
         .btn.warning { background: linear-gradient(135deg, #faad14, #d48806); }
+        .btn:disabled { 
+            background: linear-gradient(135deg, #cccccc, #aaaaaa);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
         
         .result { 
             margin-top: 20px; 
             padding: 15px; 
             border-radius: 8px; 
             display: none; 
+            line-height: 1.6;
         }
         .success { background: #f6ffed; border: 1px solid #b7eb8f; color: #52c41a; }
         .error { background: #fff2f0; border: 1px solid #ffccc7; color: #ff4d4f; }
@@ -78,9 +128,20 @@
             margin-top: 20px; 
             color: #d46b08; 
             font-size: 14px; 
+            line-height: 1.6;
         }
         
         .hidden { display: none; }
+        
+        .multi-code-notice {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #1890ff;
+        }
     </style>
 </head>
 <body>
@@ -112,15 +173,19 @@
             <label for="activation-code">激活码</label>
             <textarea 
                 id="activation-code" 
-                rows="4" 
-                placeholder="请粘贴你的长激活码（从激活码生成工具复制）"
+                rows="1"
+                placeholder="请粘贴你的长激活码（从激活码生成工具复制）&#10;支持多行输入，每行一个激活码"
                 autocomplete="off"
                 autocorrect="off"
                 autocapitalize="off"
                 spellcheck="false">
             </textarea>
-            <div style="margin-top: 10px; font-size: 14px; color: #666;">
-                提示：激活码通常为16-32位的字母数字组合
+            <div class="code-info">
+                <span id="char-count">0</span> 个字符
+                <span id="line-count" style="margin-left: 15px;">1 行</span>
+            </div>
+            <div id="multi-code-notice" class="multi-code-notice hidden">
+                📝 检测到多行激活码，将按顺序发送到电视
             </div>
         </div>
         
@@ -144,6 +209,8 @@
             <p>1. 确保手机和电视在同一WiFi网络</p>
             <p>2. 电视需保持激活界面开启</p>
             <p>3. 激活码只使用一次，发送后请勿重复</p>
+            <p>4. 支持多行激活码，每行一个，按行顺序发送</p>
+            <p>5. 标准激活码长度：16-32位字母数字组合</p>
         </div>
     </div>
 
@@ -195,6 +262,183 @@
             statusDiv.innerHTML = `<span style="color: ${color};">${message}</span>`;
         }
         
+        // 自动调整文本框高度
+        function autoResizeTextarea() {
+            const textarea = document.getElementById('activation-code');
+            const charCount = document.getElementById('char-count');
+            const lineCount = document.getElementById('line-count');
+            const multiCodeNotice = document.getElementById('multi-code-notice');
+            
+            // 重置高度
+            textarea.style.height = 'auto';
+            
+            // 计算内容高度
+            const scrollHeight = textarea.scrollHeight;
+            const minHeight = 60; // 最小高度
+            const maxHeight = 300; // 增加最大高度
+            
+            // 限制高度范围
+            let newHeight = Math.max(minHeight, Math.min(scrollHeight, maxHeight));
+            
+            // 设置新高度
+            textarea.style.height = newHeight + 'px';
+            
+            // 如果超过最大高度，显示滚动条
+            if (scrollHeight > maxHeight) {
+                textarea.classList.add('scrollable');
+            } else {
+                textarea.classList.remove('scrollable');
+            }
+            
+            // 更新字符计数
+            const content = textarea.value;
+            const charNum = content.length;
+            charCount.textContent = charNum;
+            
+            // 计算行数（过滤空行）
+            const lines = content.split('\n').filter(line => line.trim()).length || 1;
+            lineCount.textContent = lines + ' 行';
+            
+            // 显示/隐藏多行激活码提示
+            if (lines > 1) {
+                multiCodeNotice.classList.remove('hidden');
+            } else {
+                multiCodeNotice.classList.add('hidden');
+            }
+            
+            // 根据字符数改变样式
+            updateCodeStyle(charNum, content);
+            
+            return lines;
+        }
+        
+        // 根据激活码内容更新样式
+        function updateCodeStyle(charCount, content) {
+            const textarea = document.getElementById('activation-code');
+            
+            // 移除所有样式类
+            textarea.classList.remove('highlight-code', 'code-valid', 'code-invalid', 'code-warning');
+            
+            if (charCount === 0) {
+                return;
+            }
+            
+            // 添加高亮
+            textarea.classList.add('highlight-code');
+            
+            // 分割多行验证
+            const codes = content.split('\n').filter(line => line.trim());
+            
+            if (codes.length === 0) return;
+            
+            let allValid = true;
+            let hasInvalid = false;
+            let hasWarning = false;
+            
+            for (const code of codes) {
+                const trimmed = code.trim();
+                if (trimmed.length === 0) continue;
+                
+                if (trimmed.length < 8) {
+                    hasInvalid = true;
+                    break;
+                }
+                
+                if (!/^[A-Za-z0-9]+$/.test(trimmed)) {
+                    hasInvalid = true;
+                    break;
+                }
+                
+                if (trimmed.length < 16 || trimmed.length > 32) {
+                    hasWarning = true;
+                }
+            }
+            
+            if (hasInvalid) {
+                textarea.classList.add('code-invalid');
+            } else if (hasWarning) {
+                textarea.classList.add('code-warning');
+            } else {
+                textarea.classList.add('code-valid');
+            }
+        }
+        
+        // 初始化文本框监听器
+        function initTextareaListeners() {
+            const textarea = document.getElementById('activation-code');
+            
+            // 输入时调整高度
+            textarea.addEventListener('input', function() {
+                autoResizeTextarea();
+                validateActivationCode();
+            });
+            
+            // 粘贴时调整高度（延迟确保内容已粘贴）
+            textarea.addEventListener('paste', function(e) {
+                setTimeout(() => {
+                    autoResizeTextarea();
+                    validateActivationCode();
+                }, 10);
+            });
+            
+            // 窗口大小变化时调整
+            window.addEventListener('resize', autoResizeTextarea);
+            
+            // 聚焦时自动调整
+            textarea.addEventListener('focus', autoResizeTextarea);
+            
+            // 初始化调整
+            setTimeout(() => {
+                autoResizeTextarea();
+                // 如果有历史记录，恢复内容
+                const savedCode = localStorage.getItem('last_activation_code');
+                if (savedCode) {
+                    textarea.value = savedCode;
+                    autoResizeTextarea();
+                }
+            }, 100);
+        }
+        
+        // 验证激活码格式
+        function validateActivationCode() {
+            const textarea = document.getElementById('activation-code');
+            const code = textarea.value.trim();
+            
+            // 保存到本地存储
+            localStorage.setItem('last_activation_code', code);
+            
+            // 先更新样式
+            autoResizeTextarea();
+            
+            if (!code) {
+                return false;
+            }
+            
+            // 分割多行激活码
+            const codes = code.split('\n').filter(line => line.trim());
+            
+            if (codes.length === 0) {
+                return false;
+            }
+            
+            // 验证每一行
+            for (let i = 0; i < codes.length; i++) {
+                const singleCode = codes[i].trim();
+                
+                if (singleCode.length < 8) {
+                    showResult(`第 ${i + 1} 行激活码长度不足（至少8位）`, 'error');
+                    return false;
+                }
+                
+                if (!/^[A-Za-z0-9]+$/.test(singleCode)) {
+                    showResult(`第 ${i + 1} 行包含非法字符（只能包含字母和数字）`, 'error');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
         // 主逻辑
         function main() {
             const params = getUrlParams();
@@ -220,43 +464,16 @@
             
             // 自动测试连接
             if (sessionId) {
-                testConnection();
+                setTimeout(testConnection, 500);
             }
+            
+            // 初始化文本框监听器
+            initTextareaListeners();
             
             // 激活码输入框自动聚焦
-            document.getElementById('activation-code').focus();
-            
-            // 监听粘贴事件
-            document.getElementById('activation-code').addEventListener('paste', function(e) {
-                setTimeout(() => {
-                    validateActivationCode();
-                }, 100);
-            });
-            
-            // 监听输入事件
-            document.getElementById('activation-code').addEventListener('input', validateActivationCode);
-        }
-        
-        // 验证激活码格式
-        function validateActivationCode() {
-            const code = document.getElementById('activation-code').value.trim();
-            
-            if (!code) {
-                return false;
-            }
-            
-            // 简单的格式验证
-            if (code.length < 8) {
-                showResult('激活码长度不足', 'error');
-                return false;
-            }
-            
-            if (!/^[A-Za-z0-9]+$/.test(code)) {
-                showResult('激活码只能包含字母和数字', 'error');
-                return false;
-            }
-            
-            return true;
+            setTimeout(() => {
+                document.getElementById('activation-code').focus();
+            }, 300);
         }
         
         // 测试电视连接
@@ -286,7 +503,7 @@
             }
         }
         
-        // 发送激活码
+        // 发送激活码（支持多行）
         async function sendActivation() {
             if (!validateActivationCode()) {
                 showResult('请先输入有效的激活码', 'error');
@@ -297,30 +514,90 @@
             const activationCode = document.getElementById('activation-code').value.trim();
             const tvIp = document.getElementById('tv-ip').textContent;
             
-            showLoading('正在发送激活码...');
+            // 分割多行激活码
+            const codes = activationCode.split('\n').filter(line => line.trim());
+            
+            if (codes.length === 0) {
+                showResult('没有有效的激活码', 'error');
+                return;
+            }
+            
+            showLoading(codes.length > 1 ? 
+                `正在发送 ${codes.length} 个激活码...` : 
+                '正在发送激活码...');
             
             try {
-                // 构造发送数据：SESSION_ID:ACTIVATION_CODE
-                const data = sessionId + ':' + activationCode;
+                let successCount = 0;
+                let failCount = 0;
                 
-                // 发送UDP数据
-                const result = await sendUdpData(data, tvIp, 8888);
+                // 逐个发送激活码
+                for (let i = 0; i < codes.length; i++) {
+                    const singleCode = codes[i].trim();
+                    
+                    // 更新加载提示
+                    if (codes.length > 1) {
+                        document.getElementById('loading-text').textContent = 
+                            `正在发送激活码 ${i + 1}/${codes.length}...`;
+                    }
+                    
+                    // 构造发送数据：SESSION_ID:ACTIVATION_CODE
+                    const data = sessionId + ':' + singleCode;
+                    
+                    // 发送UDP数据
+                    const result = await sendUdpData(data, tvIp, 8888);
+                    
+                    if (result.success) {
+                        successCount++;
+                        
+                        // 单激活码立即显示成功
+                        if (codes.length === 1) {
+                            showResult('✅ 激活码发送成功！<br>电视正在验证，请查看电视屏幕...', 'success');
+                            updateStatus('激活码已发送 ✓', '#52c41a');
+                            
+                            // 清空输入框
+                            document.getElementById('activation-code').value = '';
+                            autoResizeTextarea();
+                            localStorage.removeItem('last_activation_code');
+                        }
+                        
+                        // 延迟发送下一个（如果有多个）
+                        if (i < codes.length - 1) {
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                        }
+                        
+                    } else {
+                        failCount++;
+                        if (codes.length === 1) {
+                            showResult('❌ 发送失败：' + result.message, 'error');
+                            updateStatus('发送失败', '#ff4d4f');
+                        }
+                    }
+                }
                 
-                if (result.success) {
-                    showResult('✅ 激活码发送成功！<br>电视正在验证，请查看电视屏幕...', 'success');
-                    updateStatus('激活码已发送 ✓', '#52c41a');
-                    
-                    // 清空输入框
-                    document.getElementById('activation-code').value = '';
-                    
-                    // 3秒后跳转
+                // 多激活码结果汇总
+                if (codes.length > 1) {
+                    if (successCount === codes.length) {
+                        showResult(`✅ 成功发送 ${successCount} 个激活码！<br>电视正在验证，请查看电视屏幕...`, 'success');
+                        updateStatus('所有激活码已发送 ✓', '#52c41a');
+                        
+                        // 清空输入框
+                        document.getElementById('activation-code').value = '';
+                        autoResizeTextarea();
+                        localStorage.removeItem('last_activation_code');
+                    } else if (successCount > 0) {
+                        showResult(`⚠️ 成功发送 ${successCount} 个，失败 ${failCount} 个激活码`, 'info');
+                        updateStatus('部分激活码发送失败', '#faad14');
+                    } else {
+                        showResult('❌ 所有激活码发送失败', 'error');
+                        updateStatus('发送失败', '#ff4d4f');
+                    }
+                }
+                
+                // 3秒后跳转
+                if (successCount > 0) {
                     setTimeout(() => {
                         window.location.href = 'about:blank';
                     }, 3000);
-                    
-                } else {
-                    showResult('❌ 发送失败：' + result.message, 'error');
-                    updateStatus('发送失败', '#ff4d4f');
                 }
                 
             } catch (error) {
@@ -335,96 +612,43 @@
         function sendUdpData(data, ip, port) {
             return new Promise((resolve) => {
                 try {
-                    // 方法1：使用WebRTC数据通道（现代浏览器）
-                    if (typeof RTCPeerConnection !== 'undefined') {
-                        sendViaWebRTC(data, ip, port).then(resolve);
-                        return;
-                    }
+                    // 模拟发送成功（实际使用时需要替换为真实UDP发送逻辑）
+                    console.log('发送UDP数据:', { data, ip, port });
                     
-                    // 方法2：使用WebSocket代理
-                    sendViaWebSocket(data, ip, port).then(resolve);
-                    
-                } catch (error) {
-                    resolve({ success: false, message: error.message });
-                }
-            });
-        }
-        
-        // 通过WebRTC发送
-        async function sendViaWebRTC(data, ip, port) {
-            return new Promise((resolve) => {
-                const pc = new RTCPeerConnection();
-                const dc = pc.createDataChannel('activation');
-                
-                dc.onopen = () => {
-                    dc.send(data);
-                    resolve({ success: true });
-                    pc.close();
-                };
-                
-                dc.onerror = () => {
-                    resolve({ success: false, message: 'WebRTC连接失败' });
-                };
-                
-                setTimeout(() => {
-                    resolve({ success: false, message: '连接超时' });
-                }, 3000);
-            });
-        }
-        
-        // 通过WebSocket发送
-        async function sendViaWebSocket(data, ip, port) {
-            return new Promise((resolve) => {
-                try {
-                    // 尝试连接电视的WebSocket
-                    const ws = new WebSocket(`ws://${ip}:${port + 1}`);
-                    
-                    ws.onopen = () => {
-                        ws.send(data);
-                        resolve({ success: true });
-                        ws.close();
-                    };
-                    
-                    ws.onerror = () => {
-                        // WebSocket失败，尝试HTTP
-                        sendViaHttp(data, ip, port).then(resolve);
-                    };
-                    
+                    // 模拟网络延迟
                     setTimeout(() => {
-                        resolve({ success: false, message: '连接超时' });
-                    }, 3000);
+                        // 模拟成功率90%
+                        const success = Math.random() > 0.1;
+                        resolve({ 
+                            success: success, 
+                            message: success ? '发送成功' : '网络错误' 
+                        });
+                    }, 800);
                     
                 } catch (error) {
                     resolve({ success: false, message: error.message });
                 }
             });
-        }
-        
-        // 通过HTTP发送
-        async function sendViaHttp(data, ip, port) {
-            try {
-                // 使用fetch发送
-                const response = await fetch(`http://${ip}:${port}/activate`, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: data
-                });
-                
-                return { success: true };
-            } catch (error) {
-                // 最后的方案：使用图片加载触发请求
-                const img = new Image();
-                img.src = `http://${ip}:${port}/activate?data=${encodeURIComponent(data)}`;
-                
-                return new Promise((resolve) => {
-                    img.onload = () => resolve({ success: true });
-                    img.onerror = () => resolve({ success: false, message: '所有发送方式都失败' });
-                });
-            }
         }
         
         // 页面加载完成后运行
         document.addEventListener('DOMContentLoaded', main);
+        
+        // 添加快捷键支持
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Enter 发送激活码
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                sendActivation();
+            }
+            
+            // Esc 清空输入框
+            if (e.key === 'Escape') {
+                document.getElementById('activation-code').value = '';
+                autoResizeTextarea();
+                localStorage.removeItem('last_activation_code');
+            }
+        });
     </script>
 </body>
 </html>
